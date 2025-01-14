@@ -7,14 +7,17 @@ import dev.mirodil.testing_system.dtos.UserResponseDTO;
 import dev.mirodil.testing_system.responses.GenericErrorResponse;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.AuthUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequestDTO request) {
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequestDTO request, HttpServletRequest servletRequest) {
         Optional<UserResponseDTO> userOptionalDTO = userService.getUserByEmail(request.getEmail());
         ResponseEntity<Map<String, Object>> wrongCredentialsErrorResponse = GenericErrorResponse.returnResponse(
                 "Email or password is incorrect",
@@ -54,6 +57,7 @@ public class AuthController {
         }
 
         Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(userDTO.getEmail());
+        AuthUtil.setAuthenticationToSecurityContext(userDTO, servletRequest);
         return ResponseEntity.ok(
                 new AuthResponseDTO(userDTO, jwtTokenDetails)
         );
@@ -66,5 +70,14 @@ public class AuthController {
         return ResponseEntity.created(userDTO.getPath()).body(
                 new AuthResponseDTO(userDTO, jwtTokenDetails)
         );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+
+        AuthUtil.blacklistToken(AuthUtil.extractTokenFromRequest(request));
+
+        return ResponseEntity.ok(Collections.singletonMap("message", "Successfully logged out"));
     }
 }

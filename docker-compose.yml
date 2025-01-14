@@ -12,8 +12,11 @@ services:
          SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
          SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
          SECRET_KEY: ${SECRET_KEY}
+         SPRING_DATA_REDIS_HOST: redis
+         SPRING_DATA_REDIS_PORT: 6379
       depends_on:
          - db
+         - redis
 
    db:
       image: postgres:17.2
@@ -28,6 +31,13 @@ services:
       volumes:
          - ./docker/postgres_data:/var/lib/postgresql/data
          - ./docker/sql:/docker-entrypoint-initdb.d
+
+   redis:
+      image: redis:7.4
+      container_name: redis
+      restart: always
+      ports:
+         - "6379:6379"
 
    nginx:
       image: nginx:1.26

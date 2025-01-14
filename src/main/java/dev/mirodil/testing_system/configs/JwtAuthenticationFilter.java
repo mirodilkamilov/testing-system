@@ -11,10 +11,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -40,11 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        SecurityContext context = SecurityContextHolder.getContext();
-
-        String token = authHeader.substring(7);
         //=== Exceptions are handled in separate ExceptionHandlerFilter ===//
+        String token = authHeader.substring(7);
         String username = AuthUtil.extractUsername(token);
+        AuthUtil.checkTokenBlacklisted(token);
 
         UserResponseDTO userDTO = userService.getUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
         if (AuthUtil.isTokenExpired(token)) {
@@ -54,6 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //            return;
         }
 
+        // TODO: if SessionCreationPolicy stateful, then remove:
+        AuthUtil.setAuthenticationToSecurityContext(userDTO, request);
+
         if (AuthUtil.isUserAuthenticated()) {
             if (!userDTO.isAccountNonLocked()) {
                 throw new UserAccountBlocked();
@@ -61,16 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-        // Set the authentication in the SecurityContext
-        UsernamePasswordAuthenticationToken authenticationToken =
-                UsernamePasswordAuthenticationToken.authenticated(
-                        userDTO,
-                        null,
-                        userDTO.getGrantedAuthorities()
-                );
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         // Continue with the filter chain
         filterChain.doFilter(request, response);

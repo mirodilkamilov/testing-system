@@ -6,14 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.io.IOException;
 import java.util.Map;
 
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResponseStatusException e, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResponseStatusException e, HttpServletRequest request) {
+        return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), request);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidToken(ResponseStatusException e, HttpServletRequest request) {
         return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), request);
     }
 }

@@ -2,9 +2,11 @@ package dev.mirodil.testing_system.configs;
 
 import dev.mirodil.testing_system.exceptions.ExceptionHandlerFilter;
 import dev.mirodil.testing_system.services.UserService;
+import dev.mirodil.testing_system.utils.AuthUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,9 +25,10 @@ public class SecurityConfig {
     private final UserDetailsService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter, StringRedisTemplate redisTemplate) {
         this.userService = userService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        AuthUtil.setRedisTemplate(redisTemplate);
     }
 
     @Bean
@@ -59,15 +62,11 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // TODO: later make it stateful
                 .authenticationProvider(getAuthenticationProvider(userService))
                 .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtAuthenticationFilter, ExceptionHandlerFilter.class);
-//                .logout(logout ->
-//                        logout.logoutUrl("/api/v1/auth/logout")
-//                                .addLogoutHandler(logoutHandler)
-//                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 
         return http.build();
     }

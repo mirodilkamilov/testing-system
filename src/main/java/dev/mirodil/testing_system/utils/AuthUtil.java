@@ -2,24 +2,58 @@ package dev.mirodil.testing_system.utils;
 
 import dev.mirodil.testing_system.configs.SecurityConfig;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
+import dev.mirodil.testing_system.exceptions.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class AuthUtil {
+    public static final long ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
     private static final PasswordEncoder passwordEncoder = SecurityConfig.getPasswordEncoder();
     private static final String secretKeyPlain = System.getenv("SECRET_KEY");
     private static final SecretKey key = Keys.hmacShaKeyFor(secretKeyPlain.getBytes());
-    private static final int oneDayInMillis = 24 * 60 * 60 * 1000;
+    private static StringRedisTemplate redisTemplate;
+
+    private AuthUtil() {
+    }
+
+    public static void setRedisTemplate(StringRedisTemplate redisTemplate) {
+        AuthUtil.redisTemplate = redisTemplate;
+    }
+
+    public static void blacklistToken(String token) {
+        redisTemplate.opsForValue().set(
+                token,
+                "blackListed",
+                ONE_DAY_IN_MILLIS,
+                TimeUnit.MILLISECONDS
+        );
+    }
+
+    public static boolean isTokenBlacklisted(String token) {
+        return redisTemplate.hasKey(token);
+    }
+
+    public static void checkTokenBlacklisted(String token) throws InvalidTokenException {
+        if (isTokenBlacklisted(token)) {
+            throw new InvalidTokenException();
+        }
+    }
 
     public static boolean isUserAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,6 +83,15 @@ public class AuthUtil {
         return getClaims(token).getSubject();
     }
 
+    public static String extractTokenFromRequest(HttpServletRequest request) throws InvalidTokenException {
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new InvalidTokenException("Authorization header is missing or invalid", HttpStatus.BAD_REQUEST);
+        }
+
+        return authHeader.substring(7);
+    }
+
     public static boolean isTokenExpired(String token) {
         Claims claims = getClaims(token);
         return claims.getExpiration().before(new Date());
@@ -73,7 +116,7 @@ public class AuthUtil {
 
     public static String generateToken(String subject) {
         Date iat = new Date(System.currentTimeMillis());
-        Date exp = new Date(iat.getTime() + oneDayInMillis);
+        Date exp = new Date(iat.getTime() + ONE_DAY_IN_MILLIS);
         return generateToken(subject, exp);
     }
 
@@ -97,5 +140,16 @@ public class AuthUtil {
 
     public static boolean isPasswordMatches(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    public static void setAuthenticationToSecurityContext(UserResponseDTO userDTO, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                UsernamePasswordAuthenticationToken.authenticated(
+                        userDTO,
+                        null,
+                        userDTO.getGrantedAuthorities()
+                );
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }
