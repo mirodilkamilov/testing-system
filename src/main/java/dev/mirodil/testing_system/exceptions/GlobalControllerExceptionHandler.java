@@ -1,0 +1,19 @@
+package dev.mirodil.testing_system.exceptions;
+
+import dev.mirodil.testing_system.responses.GenericErrorResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.io.IOException;
+import java.util.Map;
+
+@ControllerAdvice
+public class GlobalControllerExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResponseStatusException e, HttpServletRequest request) throws IOException {
+        return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), request);
+    }
+}

@@ -1,0 +1,785 @@
+{
+	"info": {
+		"_postman_id": "80a2692b-5986-448c-a90b-b96f0727281c",
+		"name": "Testing System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14692087"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "one",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpbmZvQG1pcm9kaWwuZGV2IiwiaWF0IjoxNzM2ODY0MTk4LCJleHAiOjE3MzY5NTA1OTh9.NvKZTDuH9TUgN53IVn3q908nqF-8HZfHDK9T0g24P1g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/35",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"35"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "404 (if accessed to other user too)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/12",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"12"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 15:22:11 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"path\": \"/api/users/12\",\n    \"error\": \"Not Found\",\n    \"message\": \"Resource not found\",\n    \"timestamp\": \"2025-01-14T15:22:11.119+00:00\",\n    \"status\": 404\n}"
+						},
+						{
+							"name": "successful",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users/35",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"35"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 15:24:08 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": 35,\n    \"userRole\": \"TEST_TAKER\",\n    \"email\": \"info@mirodil.dev\",\n    \"gender\": \"MALE\",\n    \"status\": \"ACTIVE\",\n    \"fname\": \"Mirodil\",\n    \"lname\": \"Kamilov\",\n    \"createdAt\": \"2025-01-14T14:12:27.407+00:00\",\n    \"path\": \"/api/users/35\",\n    \"accountNonLocked\": true\n}"
+						}
+					]
+				},
+				{
+					"name": "all",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpbmZvQG1pcm9kaWwuZGV2IiwiaWF0IjoxNzM2ODY0MTk4LCJleHAiOjE3MzY5NTA1OTh9.NvKZTDuH9TUgN53IVn3q908nqF-8HZfHDK9T0g24P1g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "all",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 11:40:36 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 12,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@gmail.us\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T09:46:05.690+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 13,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@gmail.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:20:10.801+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 14,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@gmail.de\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:33:09.742+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 15,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@gmail.ru\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:38:25.117+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 17,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@mail.ru\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:42:45.686+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 18,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@dev.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:49:13.393+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 19,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@dev.ru\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:50:26.156+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 20,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@test.ru\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:51:55.015+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 22,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@example.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:54:28.786+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 24,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@what.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:04:16.719+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 25,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@else.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:04:32.879+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 26,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@ss.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:08:31.147+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 27,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@sss.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:09:21.561+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 28,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@sws.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:13:33.324+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 29,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@wws.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:14:40.361+00:00\"\n    },\n    {\n        \"path\": \"/api/users\",\n        \"userId\": 31,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@www.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T11:16:31.864+00:00\"\n    }\n]"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"info@mirodil.dev\",\n    \"password\": \"12345\",\n    \"fname\": \"Mirodil\",\n    \"lname\": \"Kamilov\",\n    \"gender\": \"male\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "validation error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"m@d.uz\",\n    \"password\": \"1234\",\n    \"lname\": \"Kamilov\",\n    \"gender\": \"male\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Jan 2025 18:51:04 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"timestamp\": \"2025-01-13T18:51:04.175+00:00\",\n    \"status\": 400,\n    \"error\": \"Bad Request\",\n    \"message\": \"Validation failed for object='registerRequest'. Error count: 1\",\n    \"errors\": [\n        {\n            \"objectName\": \"registerRequest\",\n            \"field\": \"email\",\n            \"rejectedValue\": \"m@d.uz\",\n            \"codes\": [\n                \"Size.registerRequest.email\",\n                \"Size.email\",\n                \"Size.java.lang.String\",\n                \"Size\"\n            ],\n            \"arguments\": [\n                {\n                    \"codes\": [\n                        \"registerRequest.email\",\n                        \"email\"\n                    ],\n                    \"arguments\": null,\n                    \"defaultMessage\": \"email\",\n                    \"code\": \"email\"\n                },\n                50,\n                10\n            ],\n            \"defaultMessage\": \"Email must be between 5 and 50 characters\",\n            \"bindingFailure\": false,\n            \"code\": \"Size\"\n        }\n    ],\n    \"path\": \"/api/auth/register\"\n}"
+						},
+						{
+							"name": "successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"mirodil@example.com\",\n    \"password\": \"12345\",\n    \"fname\": \"Mirodil\",\n    \"lname\": \"Kamilov\",\n    \"gender\": \"Male\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Location",
+									"value": "/api/users/22"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 10:54:31 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user\": {\n        \"path\": \"/api/users/22\",\n        \"userId\": 22,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"mirodil@example.com\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"isAccountNonLocked\": true,\n        \"createdAt\": \"2025-01-14T10:54:28.786+00:00\"\n    },\n    \"token\": {\n        \"expiresAt\": \"2025-01-15T10:54:30.000+00:00\",\n        \"issuedAt\": \"2025-01-14T10:54:30.537+00:00\",\n        \"access\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtaXJvZGlsQGV4YW1wbGUuY29tIiwiaWF0IjoxNzM2ODUyMDcwLCJleHAiOjE3MzY5Mzg0NzB9.CHk_KfizKGWviT_2Wa2M2KzIMJ98xPEd6GftKbr5WnM\",\n        \"type\": \"Bearer\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"info@mirodil.dev\",\n    \"password\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "validation error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"info@mirodil.dev\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 14:10:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"timestamp\": \"2025-01-14T14:10:45.997+00:00\",\n    \"status\": 400,\n    \"error\": \"Bad Request\",\n    \"message\": \"Validation failed for object='userLoginRequestDTO'. Error count: 1\",\n    \"errors\": [\n        {\n            \"objectName\": \"userLoginRequestDTO\",\n            \"field\": \"password\",\n            \"rejectedValue\": null,\n            \"codes\": [\n                \"NotBlank.userLoginRequestDTO.password\",\n                \"NotBlank.password\",\n                \"NotBlank.java.lang.String\",\n                \"NotBlank\"\n            ],\n            \"arguments\": [\n                {\n                    \"codes\": [\n                        \"userLoginRequestDTO.password\",\n                        \"password\"\n                    ],\n                    \"arguments\": null,\n                    \"defaultMessage\": \"password\",\n                    \"code\": \"password\"\n                }\n            ],\n            \"defaultMessage\": \"must not be blank\",\n            \"bindingFailure\": false,\n            \"code\": \"NotBlank\"\n        }\n    ],\n    \"path\": \"/api/auth/login\"\n}"
+						},
+						{
+							"name": "wrong credentials",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"info@mirodil.dev\",\n    \"password\": \"123456\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 14:12:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"path\": \"/api/auth/login\",\n    \"error\": \"Bad Request\",\n    \"message\": \"Email or password is incorrect\",\n    \"timestamp\": \"2025-01-14T14:12:58.837+00:00\",\n    \"status\": 400\n}"
+						},
+						{
+							"name": "successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"info@mirodil.dev\",\n    \"password\": \"12345\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Jan 2025 14:16:38 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user\": {\n        \"userId\": 35,\n        \"userRole\": \"TEST_TAKER\",\n        \"email\": \"info@mirodil.dev\",\n        \"gender\": \"MALE\",\n        \"status\": \"ACTIVE\",\n        \"fname\": \"Mirodil\",\n        \"lname\": \"Kamilov\",\n        \"createdAt\": \"2025-01-14T14:12:27.407+00:00\",\n        \"path\": \"/api/users/35\",\n        \"accountNonLocked\": true\n    },\n    \"token\": {\n        \"type\": \"Bearer\",\n        \"access\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpbmZvQG1pcm9kaWwuZGV2IiwiaWF0IjoxNzM2ODY0MTk4LCJleHAiOjE3MzY5NTA1OTh9.NvKZTDuH9TUgN53IVn3q908nqF-8HZfHDK9T0g24P1g\",\n        \"issuedAt\": \"2025-01-14T14:16:38.150+00:00\",\n        \"expiresAt\": \"2025-01-15T14:16:38.000+00:00\"\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/api",
+			"type": "string"
+		}
+	]
+}
