@@ -6,11 +6,13 @@ import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.models.UserRole;
 import dev.mirodil.testing_system.repositories.UserRepository;
 import dev.mirodil.testing_system.utils.AuthUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,14 +24,16 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public List<UserResponseDTO> getAllUsers() {
-        Iterable<User> users = userRepository.findAll();
-        List<UserResponseDTO> usersDTO = new ArrayList<>();
-        users.forEach(
-                user -> usersDTO.add(new UserResponseDTO(user))
-        );
+    public Page<UserResponseDTO> getUsers(int page, int size) {
+        int offset = page * size;
+        List<User> users = userRepository.findUsersWithPagination(size, offset);
+        long totalElements = userRepository.countUsersById();
 
-        return usersDTO;
+        List<UserResponseDTO> usersDTO = users.stream()
+                .map(UserResponseDTO::new)
+                .toList();
+
+        return new PageImpl<>(usersDTO, PageRequest.of(page, size), totalElements);
     }
 
     public Optional<UserResponseDTO> getUserByEmail(String email) {

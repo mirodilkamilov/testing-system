@@ -5,12 +5,11 @@ import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.UserRole;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.AuthUtil;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,8 +23,10 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponseDTO> getAllUsers() {
-        return userService.getAllUsers();
+    public Page<UserResponseDTO> getAllUsers(
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(5) @Max(25) int size) {
+        return userService.getUsers(page, size);
     }
 
     @GetMapping("/{id}")
@@ -43,3 +44,11 @@ public class UserController {
         return currentUser;
     }
 }
+
+/*
+ TODO:
+ 1. Pagination and content wrapping json response
+ 2. Authorization
+ 3. Tests model
+ 4. TestEvents model
+ */
