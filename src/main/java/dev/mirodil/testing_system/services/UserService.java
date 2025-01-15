@@ -2,12 +2,10 @@ package dev.mirodil.testing_system.services;
 
 import dev.mirodil.testing_system.dtos.UserRegisterRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
-import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.models.UserRole;
 import dev.mirodil.testing_system.repositories.UserRepository;
 import dev.mirodil.testing_system.utils.AuthUtil;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,16 +32,6 @@ public class UserService implements UserDetailsService {
         return usersDTO;
     }
 
-    public Optional<UserResponseDTO> getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            UserResponseDTO userDTO = new UserResponseDTO(user.get());
-            return Optional.of(userDTO);
-        }
-
-        return Optional.empty();
-    }
-
     public Optional<UserResponseDTO> getUserByEmail(String email) {
         Optional<User> user = userRepository.findUserByEmail(email);
         if (user.isPresent()) {
@@ -55,17 +43,22 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findUserByEmail(username);
+        if (optionalUser.isEmpty()) {
+            throw new UsernameNotFoundException("User with " + username + " username doesn't exist");
+        }
+
+        return optionalUser.get();
     }
 
     public UserResponseDTO createUser(UserRegisterRequestDTO request) {
         User user = new User(
-                request.getEmail(),
-                AuthUtil.encodePassword(request.getPassword()),
-                request.getFirstName(),
-                request.getLastName(),
-                request.getGender()
+                request.email(),
+                AuthUtil.encodePassword(request.password()),
+                request.fname(),
+                request.lname(),
+                request.gender()
         );
         user.setUserRole(UserRole.TEST_TAKER);
         user = userRepository.save(user);

@@ -4,6 +4,7 @@ import dev.mirodil.testing_system.dtos.AuthResponseDTO;
 import dev.mirodil.testing_system.dtos.UserLoginRequestDTO;
 import dev.mirodil.testing_system.dtos.UserRegisterRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
+import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.responses.GenericErrorResponse;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.AuthUtil;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -32,23 +33,24 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequestDTO request, HttpServletRequest servletRequest) {
-        Optional<UserResponseDTO> userOptionalDTO = userService.getUserByEmail(request.getEmail());
         ResponseEntity<Map<String, Object>> wrongCredentialsErrorResponse = GenericErrorResponse.returnResponse(
                 "Email or password is incorrect",
                 HttpStatus.BAD_REQUEST,
                 "/api/auth/login"
         );
 
-        if (userOptionalDTO.isEmpty()) {
+        User user;
+        try {
+            user = userService.loadUserByUsername(request.email());
+        } catch (UsernameNotFoundException e) {
             return wrongCredentialsErrorResponse;
         }
 
-        UserResponseDTO userDTO = userOptionalDTO.get();
-        if (!AuthUtil.isPasswordMatches(request.getPassword(), userDTO.getPassword())) {
+        if (!AuthUtil.isPasswordMatches(request.password(), user.getPassword())) {
             return wrongCredentialsErrorResponse;
         }
 
-        if (!userDTO.isAccountNonLocked()) {
+        if (!user.isAccountNonLocked()) {
             return GenericErrorResponse.returnResponse(
                     "Your account is locked. Please contact support.",
                     HttpStatus.FORBIDDEN,
@@ -56,18 +58,18 @@ public class AuthController {
             );
         }
 
-        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(userDTO.getEmail());
-        AuthUtil.setAuthenticationToSecurityContext(userDTO, servletRequest);
+        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(user.getEmail());
+        AuthUtil.setAuthenticationToSecurityContext(user, servletRequest);
         return ResponseEntity.ok(
-                new AuthResponseDTO(userDTO, jwtTokenDetails)
+                new AuthResponseDTO(new UserResponseDTO(user), jwtTokenDetails)
         );
     }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody UserRegisterRequestDTO request) {
         UserResponseDTO userDTO = userService.createUser(request);
-        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(userDTO.getEmail());
-        return ResponseEntity.created(userDTO.getPath()).body(
+        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(userDTO.email());
+        return ResponseEntity.created(userDTO.path()).body(
                 new AuthResponseDTO(userDTO, jwtTokenDetails)
         );
     }

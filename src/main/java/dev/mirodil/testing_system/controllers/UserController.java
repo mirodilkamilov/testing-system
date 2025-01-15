@@ -36,7 +36,7 @@ public class UserController {
         }
 
         UserResponseDTO currentUser = userOptionalDTO.get();
-        if (!currentUser.getUserId().equals(id) || currentUser.getUserRole() == UserRole.ADMIN) {
+        if (!currentUser.userId().equals(id) || currentUser.userRole() == UserRole.ADMIN) {
             throw new ResourceNotFoundException();
         }
 

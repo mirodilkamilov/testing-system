@@ -1,8 +1,8 @@
 package dev.mirodil.testing_system.utils;
 
-import dev.mirodil.testing_system.configs.SecurityConfig;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
 import dev.mirodil.testing_system.exceptions.InvalidTokenException;
+import dev.mirodil.testing_system.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -22,18 +23,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class AuthUtil {
     public static final long ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
-    private static final PasswordEncoder passwordEncoder = SecurityConfig.getPasswordEncoder();
     private static final String secretKeyPlain = System.getenv("SECRET_KEY");
     private static final SecretKey key = Keys.hmacShaKeyFor(secretKeyPlain.getBytes());
+    private static PasswordEncoder passwordEncoder;
     private static StringRedisTemplate redisTemplate;
 
-    private AuthUtil() {
-    }
-
-    public static void setRedisTemplate(StringRedisTemplate redisTemplate) {
+    public AuthUtil(StringRedisTemplate redisTemplate, PasswordEncoder passwordEncoder) {
         AuthUtil.redisTemplate = redisTemplate;
+        AuthUtil.passwordEncoder = passwordEncoder;
     }
 
     public static void blacklistToken(String token) {
@@ -65,8 +65,8 @@ public class AuthUtil {
     public static Optional<UserResponseDTO> getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            UserResponseDTO userDTO = (UserResponseDTO) authentication.getPrincipal();
-            return Optional.of(userDTO);
+            User user = (User) authentication.getPrincipal();
+            return Optional.of(new UserResponseDTO(user));
         }
         return Optional.empty();
     }
@@ -142,12 +142,12 @@ public class AuthUtil {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    public static void setAuthenticationToSecurityContext(UserResponseDTO userDTO, HttpServletRequest request) {
+    public static void setAuthenticationToSecurityContext(User user, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 UsernamePasswordAuthenticationToken.authenticated(
-                        userDTO,
+                        user,
                         null,
-                        userDTO.getGrantedAuthorities()
+                        user.getAuthorities()
                 );
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

@@ -1,9 +1,8 @@
 package dev.mirodil.testing_system.configs;
 
-import dev.mirodil.testing_system.dtos.UserResponseDTO;
 import dev.mirodil.testing_system.exceptions.InvalidTokenException;
-import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.exceptions.UserAccountBlocked;
+import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.AuthUtil;
 import jakarta.servlet.FilterChain;
@@ -41,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = AuthUtil.extractUsername(token);
         AuthUtil.checkTokenBlacklisted(token);
 
-        UserResponseDTO userDTO = userService.getUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
+        User user = userService.loadUserByUsername(username);
         if (AuthUtil.isTokenExpired(token)) {
             throw new InvalidTokenException("Token expired");
 //            Alternative way without throwing exceptions
@@ -50,10 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // TODO: if SessionCreationPolicy stateful, then remove:
-        AuthUtil.setAuthenticationToSecurityContext(userDTO, request);
+        AuthUtil.setAuthenticationToSecurityContext(user, request);
 
         if (AuthUtil.isUserAuthenticated()) {
-            if (!userDTO.isAccountNonLocked()) {
+            if (!user.isAccountNonLocked()) {
                 throw new UserAccountBlocked();
             }
             filterChain.doFilter(request, response);

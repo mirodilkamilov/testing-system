@@ -14,9 +14,6 @@ import java.io.IOException;
 
 @Component
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
-//    private final ObjectMapper objectMapper = new ObjectMapper();
-
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -35,12 +32,5 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     private void handleException(HttpServletResponse response, HttpStatus status, String message) throws IOException {
         response.setContentType("application/json");
         response.sendError(status.value(), message);
-//        response.setStatus(status.value());
-//        response.getWriter().write(
-//                "{\"status\": " + status.value() + ", " +
-//                        "\"error\": \"" + status.getReasonPhrase() + "\", " +
-//                        "\"message\": \"" + message + "\", " +
-//                        "\"path\": \"/api/auth\"}"
-//        );
     }
 }
