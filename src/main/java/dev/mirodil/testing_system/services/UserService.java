@@ -8,7 +8,7 @@ import dev.mirodil.testing_system.repositories.UserRepository;
 import dev.mirodil.testing_system.utils.AuthUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,16 +24,15 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public Page<UserResponseDTO> getUsers(int page, int size) {
-        int offset = page * size;
-        List<User> users = userRepository.findUsersWithPagination(size, offset);
+    public Page<UserResponseDTO> getUsers(Pageable pageable) {
+        List<User> users = userRepository.findAndSortUsersWithPagination(pageable);
         long totalElements = userRepository.countUsersById();
 
         List<UserResponseDTO> usersDTO = users.stream()
                 .map(UserResponseDTO::new)
                 .toList();
 
-        return new PageImpl<>(usersDTO, PageRequest.of(page, size), totalElements);
+        return new PageImpl<>(usersDTO, pageable, totalElements);
     }
 
     public Optional<UserResponseDTO> getUserByEmail(String email) {

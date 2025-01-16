@@ -41,6 +41,10 @@ public class User implements UserDetails {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -78,8 +82,16 @@ public class User implements UserDetails {
         return status;
     }
 
+    public void setUserStatus(UserStatus status) {
+        this.status = status;
+    }
+
     public Date getCreatedAt() {
         return created_at;
+    }
+
+    public void setCreatedAt(Date created_at) {
+        this.created_at = created_at;
     }
 
     @Override

@@ -5,10 +5,12 @@ import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.UserRole;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.AuthUtil;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -23,10 +25,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserResponseDTO> getAllUsers(
-            @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "10") @Min(5) @Max(25) int size) {
-        return userService.getUsers(page, size);
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
+        return userService.getUsers(pageable);
     }
 
     @GetMapping("/{id}")

@@ -1,5 +1,6 @@
 package dev.mirodil.testing_system.dtos;
 
+import dev.mirodil.testing_system.controllers.UserController;
 import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.models.UserGender;
 import dev.mirodil.testing_system.models.UserRole;
@@ -7,6 +8,8 @@ import dev.mirodil.testing_system.models.UserStatus;
 
 import java.net.URI;
 import java.util.Date;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 
 public record UserResponseDTO(
@@ -32,7 +35,7 @@ public record UserResponseDTO(
                 user.getLastName(),
                 user.isAccountNonLocked(),
                 user.getCreatedAt(),
-                URI.create("/api/users/" + user.getId())
+                linkTo(UserController.class).slash(user.getId()).toUri()
         );
     }
 }
