@@ -9,9 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 @Table("users")
 public class User implements UserDetails {
+    private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
+            "id", "email", "role", "fname", "lname", "status", "created_at"
+    );
+
     @Id
     private Long id;
     private String email;
@@ -35,6 +40,10 @@ public class User implements UserDetails {
         this.gender = gender;
         this.status = UserStatus.ACTIVE;
         created_at = new Date();
+    }
+
+    public static Set<String> getAllowedSortAttributes() {
+        return ALLOWED_SORT_ATTRIBUTES;
     }
 
     public Long getId() {

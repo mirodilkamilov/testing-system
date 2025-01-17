@@ -16,8 +16,8 @@ public class GlobalControllerExceptionHandler {
         return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), request);
     }
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidToken(ResponseStatusException e, HttpServletRequest request) {
+    @ExceptionHandler({InvalidTokenException.class, GenericValidationError.class})
+    public ResponseEntity<Map<String, Object>> handleUserExceptions(ResponseStatusException e, HttpServletRequest request) {
         return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), request);
     }
 }

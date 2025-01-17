@@ -36,7 +36,7 @@ public class AuthController {
         ResponseEntity<Map<String, Object>> wrongCredentialsErrorResponse = GenericErrorResponse.returnResponse(
                 "Email or password is incorrect",
                 HttpStatus.BAD_REQUEST,
-                "/api/auth/login"
+                servletRequest
         );
 
         User user;
@@ -54,7 +54,7 @@ public class AuthController {
             return GenericErrorResponse.returnResponse(
                     "Your account is locked. Please contact support.",
                     HttpStatus.FORBIDDEN,
-                    "/api/auth/login"
+                    servletRequest
             );
         }
 

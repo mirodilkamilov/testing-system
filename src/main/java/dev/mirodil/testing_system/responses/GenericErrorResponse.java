@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorContro
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class GenericErrorResponse {
      * @param path       request path of which error occurred
      * @return ResponseEntity - same structure as default error response in {@link BasicErrorController}
      */
-    public static ResponseEntity<Map<String, Object>> returnResponse(String message, HttpStatus statusCode, String path) {
+    public static ResponseEntity<Map<String, Object>> returnResponse(String message, HttpStatus statusCode, URI path) {
         if (statusCode == HttpStatus.NO_CONTENT) {
             return new ResponseEntity<>(statusCode);
         }
@@ -41,7 +42,7 @@ public class GenericErrorResponse {
      * @return ResponseEntity - same structure as default error response in {@link BasicErrorController}
      */
     public static ResponseEntity<Map<String, Object>> returnResponse(String message, HttpStatus statusCode, HttpServletRequest request) {
-        String path = request.getContextPath() + request.getServletPath();
+        URI path = URI.create(request.getRequestURL().toString());
         return returnResponse(message, statusCode, path);
     }
 }
