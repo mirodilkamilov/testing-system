@@ -1,38 +1,51 @@
 package dev.mirodil.testing_system.repositories;
 
 import dev.mirodil.testing_system.models.User;
-import dev.mirodil.testing_system.utils.DataUtil;
-import org.springframework.data.domain.Pageable;
+import dev.mirodil.testing_system.services.PageWithFilterRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static dev.mirodil.testing_system.utils.DataUtil.appendOrderByClause;
+import static dev.mirodil.testing_system.utils.DataUtil.appendWhereClause;
 
 @Repository
 public class CustomUserRepositoryImpl implements CustomUserRepository {
-    private final JdbcTemplate namedJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public CustomUserRepositoryImpl(JdbcTemplate namedJdbcTemplate) {
-        this.namedJdbcTemplate = namedJdbcTemplate;
+    public CustomUserRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public List<User> findAndSortUsersWithPagination(Pageable pageable) {
+    public List<User> findAndSortUsersWithPagination(PageWithFilterRequest pageable) {
+        // Base query
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM users");
+
+        // Add filters dynamically
+        Map<String, String> filters = pageable.getFilters();
+        List<Object> queryParams = new ArrayList<>(
+                appendWhereClause(queryBuilder, filters)
+        );
+
+        // Add sorting dynamically
         Sort sort = pageable.getSort();
-        String baseQuery = "SELECT * FROM users";
-        String orderByClause = "";
+        appendOrderByClause(queryBuilder, sort);
 
-        if (sort.isSorted()) {
-            orderByClause = DataUtil.convertSortOrdersToOrderByClause(sort);
-        }
-        String finalQuery = baseQuery + orderByClause + " LIMIT ? OFFSET ?";
+        // Add pagination
+        queryBuilder.append(" LIMIT ? OFFSET ?");
+        queryParams.add(pageable.getPageSize());
+        queryParams.add(pageable.getOffset());
 
-        return namedJdbcTemplate.query(
-                finalQuery,
+        // Execute the query
+        return jdbcTemplate.query(
+                queryBuilder.toString(),
                 new UserRowMapper(),
-                pageable.getPageSize(),
-                pageable.getOffset()
+                queryParams.toArray()
         );
     }
 }

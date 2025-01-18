@@ -8,7 +8,6 @@ import dev.mirodil.testing_system.repositories.UserRepository;
 import dev.mirodil.testing_system.utils.AuthUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public Page<UserResponseDTO> getUsers(Pageable pageable) {
+    public Page<UserResponseDTO> getUsers(PageWithFilterRequest pageable) {
         List<User> users = userRepository.findAndSortUsersWithPagination(pageable);
         long totalElements = userRepository.countUsersById();
 

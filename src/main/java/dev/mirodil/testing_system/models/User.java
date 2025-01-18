@@ -16,6 +16,9 @@ public class User implements UserDetails {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
             "id", "email", "role", "fname", "lname", "status", "created_at"
     );
+    private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
+            "id", "email", "role", "fname", "lname", "status", "created_at"
+    );
 
     @Id
     private Long id;
@@ -44,6 +47,10 @@ public class User implements UserDetails {
 
     public static Set<String> getAllowedSortAttributes() {
         return ALLOWED_SORT_ATTRIBUTES;
+    }
+
+    public static Set<String> getAllowedFilterAttributes() {
+        return ALLOWED_FILTER_ATTRIBUTES;
     }
 
     public Long getId() {
