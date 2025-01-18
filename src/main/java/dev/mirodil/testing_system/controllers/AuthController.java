@@ -58,20 +58,22 @@ public class AuthController {
             );
         }
 
-        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(user.getEmail());
         AuthUtil.setAuthenticationToSecurityContext(user, servletRequest);
+        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(user.getEmail());
+        AuthResponseDTO authResponseDTO = new AuthResponseDTO(new UserResponseDTO(user), jwtTokenDetails);
+
         return ResponseEntity.ok(
-                new AuthResponseDTO(new UserResponseDTO(user), jwtTokenDetails)
+                new WrapResponseWithContentKey<>(authResponseDTO)
         );
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody UserRegisterRequestDTO request) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequestDTO request) {
         UserResponseDTO userDTO = userService.createUser(request);
         Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(userDTO.email());
-        return ResponseEntity.created(userDTO.path()).body(
-                new AuthResponseDTO(userDTO, jwtTokenDetails)
-        );
+        AuthResponseDTO authResponseDTO = new AuthResponseDTO(userDTO, jwtTokenDetails);
+
+        return ResponseEntity.created(userDTO.path()).body(new WrapResponseWithContentKey<>(authResponseDTO));
     }
 
     @PostMapping("/logout")

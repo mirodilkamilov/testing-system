@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponseDTO getUserById(@PathVariable Long id) {
+    public WrapResponseWithContentKey<?> getUserById(@PathVariable Long id) {
         Optional<UserResponseDTO> userOptionalDTO = AuthUtil.getAuthenticatedUser();
         if (userOptionalDTO.isEmpty()) {
             throw new ResourceNotFoundException();
@@ -48,7 +48,7 @@ public class UserController {
             throw new ResourceNotFoundException();
         }
 
-        return currentUser;
+        return new WrapResponseWithContentKey<>(currentUser);
     }
 }
 
