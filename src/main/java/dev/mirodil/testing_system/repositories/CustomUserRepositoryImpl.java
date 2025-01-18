@@ -1,7 +1,7 @@
 package dev.mirodil.testing_system.repositories;
 
 import dev.mirodil.testing_system.models.User;
-import dev.mirodil.testing_system.services.PageWithFilterRequest;
+import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

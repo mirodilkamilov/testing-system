@@ -1,4 +1,4 @@
-package dev.mirodil.testing_system.services;
+package dev.mirodil.testing_system.utils;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

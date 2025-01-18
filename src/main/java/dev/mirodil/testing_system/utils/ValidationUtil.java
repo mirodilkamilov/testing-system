@@ -1,7 +1,6 @@
 package dev.mirodil.testing_system.utils;
 
 import dev.mirodil.testing_system.exceptions.GenericValidationError;
-import dev.mirodil.testing_system.services.PageWithFilterRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 

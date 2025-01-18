@@ -1,6 +1,6 @@
 package dev.mirodil.testing_system.configs;
 
-import dev.mirodil.testing_system.services.PageWithFilterRequest;
+import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;

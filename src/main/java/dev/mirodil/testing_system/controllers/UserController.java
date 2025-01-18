@@ -4,9 +4,9 @@ import dev.mirodil.testing_system.dtos.UserResponseDTO;
 import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.models.UserRole;
-import dev.mirodil.testing_system.services.PageWithFilterRequest;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.AuthUtil;
+import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import dev.mirodil.testing_system.utils.ValidationUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,7 +54,6 @@ public class UserController {
 
 /*
  TODO:
- 1. Pagination and content wrapping json response
  2. Authorization
  3. Tests model
  4. TestEvents model
