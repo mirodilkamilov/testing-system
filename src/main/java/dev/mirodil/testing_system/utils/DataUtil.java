@@ -25,8 +25,8 @@ public class DataUtil {
             queryBuilder.append(" WHERE ");
             queryBuilder.append(filters.entrySet().stream()
                     .map(entry -> {
-                        filterValues.add(entry.getValue()); // Add the filter value as a parameter
-                        return entry.getKey() + " = ?";
+                        filterValues.add("%" + entry.getValue() + "%"); // Add the filter value as a parameter
+                        return entry.getKey() + " LIKE ?";
                     })
                     .collect(Collectors.joining(" AND ")));
         }
