@@ -2,6 +2,7 @@ package dev.mirodil.testing_system.services;
 
 import dev.mirodil.testing_system.dtos.UserRegisterRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
+import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.models.UserRole;
 import dev.mirodil.testing_system.repositories.UserRepository;
@@ -14,7 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -35,24 +35,18 @@ public class UserService implements UserDetailsService {
         return new PageImpl<>(usersDTO, pageable, totalElements);
     }
 
-    public Optional<UserResponseDTO> getUserByEmail(String email) {
-        Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isPresent()) {
-            UserResponseDTO userDTO = new UserResponseDTO(user.get());
-            return Optional.of(userDTO);
-        }
-
-        return Optional.empty();
+    public UserResponseDTO getUserByEmail(String email) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with email: " + email)
+        );
+        return new UserResponseDTO(user);
     }
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findUserByEmail(username);
-        if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("User with " + username + " username doesn't exist");
-        }
-
-        return optionalUser.get();
+        return userRepository.findUserByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User with " + username + " username doesn't exist")
+        );
     }
 
     public UserResponseDTO createUser(UserRegisterRequestDTO request) {
@@ -66,6 +60,13 @@ public class UserService implements UserDetailsService {
         user.setUserRole(UserRole.TEST_TAKER);
         user = userRepository.save(user);
 
+        return new UserResponseDTO(user);
+    }
+
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findUserById(id).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + id)
+        );
         return new UserResponseDTO(user);
     }
 }

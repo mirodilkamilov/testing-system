@@ -1,5 +1,6 @@
 package dev.mirodil.testing_system.validations;
 
+import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.services.UserService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -17,6 +18,12 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
         if (email == null || email.isBlank()) {
             return false;
         }
-        return userService.getUserByEmail(email).isEmpty();
+        try {
+            userService.getUserByEmail(email);
+        } catch (ResourceNotFoundException e) {
+            return true;
+        }
+
+        return false;
     }
 }

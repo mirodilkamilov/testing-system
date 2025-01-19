@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Long>, CustomUserRepository {
     Optional<User> findUserByEmail(String email);
 
+    Optional<User> findUserById(Long id);
+
     @Query("SELECT * FROM users LIMIT :limit OFFSET :offset")
     List<User> findUsersWithPagination(long limit, long offset);
 
