@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,10 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static dev.mirodil.testing_system.models.enums.UserRole.ADMIN;
+import static dev.mirodil.testing_system.models.enums.UserRole.TEST_TAKER;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final UserService userService;
@@ -57,7 +61,14 @@ public class SecurityConfig {
                                 ))
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/auth/**", "/error").permitAll()
+                                .requestMatchers(
+                                        "/auth/**",
+                                        "/test-taker/register",
+                                        "/error",
+                                        "/public"
+                                ).permitAll()
+                                .requestMatchers("/admin/**").hasRole(ADMIN.name())
+                                .requestMatchers("/test-taker/**").hasAnyRole(ADMIN.name(), TEST_TAKER.name())
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

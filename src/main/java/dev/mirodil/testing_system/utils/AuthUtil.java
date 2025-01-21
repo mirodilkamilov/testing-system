@@ -1,8 +1,11 @@
 package dev.mirodil.testing_system.utils;
 
+import dev.mirodil.testing_system.controllers.UserManagementController;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
 import dev.mirodil.testing_system.exceptions.InvalidTokenException;
+import dev.mirodil.testing_system.exceptions.UnauthorizedException;
 import dev.mirodil.testing_system.models.User;
+import dev.mirodil.testing_system.models.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -18,10 +21,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.net.URI;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AuthUtil {
@@ -57,18 +63,35 @@ public class AuthUtil {
 
     public static boolean isUserAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return isUserAuthenticated(authentication);
+    }
+
+    public static boolean isUserAuthenticated(Authentication authentication) {
         return authentication != null &&
                 authentication.isAuthenticated() &&
                 !(authentication instanceof AnonymousAuthenticationToken);
     }
 
-    public static Optional<UserResponseDTO> getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            User user = (User) authentication.getPrincipal();
-            return Optional.of(new UserResponseDTO(user));
+    public static UserResponseDTO getAuthenticatedUserDTO() throws UnauthorizedException {
+        User user = getAuthenticatedUser();
+        if (user.isAdmin()) {
+            URI customPath = linkTo(methodOn(UserManagementController.class).getProfile()).toUri();
+            return new UserResponseDTO(user, customPath);
         }
-        return Optional.empty();
+        return new UserResponseDTO(user);
+    }
+
+    public static User getAuthenticatedUser() throws UnauthorizedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!isUserAuthenticated(authentication)) {
+            throw new UnauthorizedException();
+        }
+        return (User) authentication.getPrincipal();
+    }
+
+    public static UserRole getAuthenticatedUserRole() throws UnauthorizedException {
+        User user = getAuthenticatedUser();
+        return user.getUserRoleName();
     }
 
     private static Claims getClaims(String token) {

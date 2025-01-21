@@ -2,7 +2,6 @@ package dev.mirodil.testing_system.controllers;
 
 import dev.mirodil.testing_system.dtos.AuthResponseDTO;
 import dev.mirodil.testing_system.dtos.UserLoginRequestDTO;
-import dev.mirodil.testing_system.dtos.UserRegisterRequestDTO;
 import dev.mirodil.testing_system.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.security.auth.login.AccountLockedException;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
@@ -30,17 +28,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequestDTO request, HttpServletRequest servletRequest) throws BadCredentialsException, AccountLockedException {
         AuthResponseDTO authResponseDTO = authService.authenticate(request, servletRequest);
-
         return ResponseEntity.ok(
                 new WrapResponseWithContentKey<>(authResponseDTO)
         );
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequestDTO request) {
-        AuthResponseDTO authResponseDTO = authService.register(request);
-        URI userPath = authResponseDTO.userDTO().path();
-        return ResponseEntity.created(userPath).body(new WrapResponseWithContentKey<>(authResponseDTO));
     }
 
     @PostMapping("/logout")

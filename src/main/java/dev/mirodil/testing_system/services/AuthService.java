@@ -2,7 +2,6 @@ package dev.mirodil.testing_system.services;
 
 import dev.mirodil.testing_system.dtos.AuthResponseDTO;
 import dev.mirodil.testing_system.dtos.UserLoginRequestDTO;
-import dev.mirodil.testing_system.dtos.UserRegisterRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
 import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.utils.AuthUtil;
@@ -43,12 +42,6 @@ public class AuthService {
         Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(user.getEmail());
 
         return new AuthResponseDTO(new UserResponseDTO(user), jwtTokenDetails);
-    }
-
-    public AuthResponseDTO register(UserRegisterRequestDTO request) {
-        UserResponseDTO userDTO = userService.createUser(request);
-        Map<String, Object> jwtTokenDetails = AuthUtil.generateTokenDetails(userDTO.email());
-        return new AuthResponseDTO(userDTO, jwtTokenDetails);
     }
 
     public void logout(HttpServletRequest request) {
