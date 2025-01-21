@@ -1,6 +1,11 @@
 package dev.mirodil.testing_system.models;
 
+import dev.mirodil.testing_system.models.enums.PermissionType;
+import dev.mirodil.testing_system.models.enums.UserGender;
+import dev.mirodil.testing_system.models.enums.UserRole;
+import dev.mirodil.testing_system.models.enums.UserStatus;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,35 +19,40 @@ import java.util.Set;
 @Table("users")
 public class User implements UserDetails {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
-            "id", "email", "role", "fname", "lname", "status", "created_at"
+            "userId", "email", "userRole", "fname", "lname", "status", "created_at"
     );
     private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
-            "id", "email", "role", "fname", "lname", "status", "created_at"
+            "userId", "email", "userRole", "fname", "lname", "status", "created_at"
     );
 
     @Id
     private Long id;
     private String email;
     private String password;
-    private UserRole role;
+    private Long roleId;
     private String fname;
     private String lname;
     private UserGender gender;
     private UserStatus status;
-    private Date created_at;
+    private Date createdAt;
+
+    @Transient
+    private Role role;
+    @Transient
+    private Set<PermissionType> permissionNames;
 
     public User() {
     }
 
-    public User(String email, String password, String fname, String lname, UserGender gender) {
+    public User(String email, String password, Long roleId, String fname, String lname, UserGender gender) {
         this.email = email;
         this.password = password;
-        this.role = UserRole.TEST_TAKER;
+        this.roleId = roleId;
         this.fname = fname;
         this.lname = lname;
         this.gender = gender;
         this.status = UserStatus.ACTIVE;
-        created_at = new Date();
+        createdAt = new Date();
     }
 
     public static Set<String> getAllowedSortAttributes() {
@@ -74,20 +84,40 @@ public class User implements UserDetails {
         return password;
     }
 
+    public Role getUserRole() {
+        return role;
+    }
+
+    public void setUserRole(Role role) {
+        this.role = role;
+    }
+
+    public UserRole getUserRoleName() {
+        return role.getName();
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public boolean isAdmin() {
+        return role.getName() == UserRole.ADMIN;
+    }
+
+    public Set<PermissionType> getPermissionNames() {
+        return permissionNames;
+    }
+
+    public void setPermissionNames(Set<PermissionType> permissionNames) {
+        this.permissionNames = permissionNames;
+    }
+
     public String getFirstName() {
         return fname;
     }
 
     public String getLastName() {
         return lname;
-    }
-
-    public UserRole getUserRole() {
-        return role;
-    }
-
-    public void setUserRole(UserRole role) {
-        this.role = role;
     }
 
     public UserGender getGender() {
@@ -103,19 +133,23 @@ public class User implements UserDetails {
     }
 
     public Date getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
-        for (UserRole role : UserRole.values()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.name().toUpperCase()));
-        }
+        // Add the user's role as a GrantedAuthority
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName().toString().toUpperCase()));
+        // Add permissions associated with the role
+        permissionNames.forEach(permission ->
+                grantedAuthorities.add(new SimpleGrantedAuthority(permission.name()))
+        );
+
         return grantedAuthorities;
     }
 

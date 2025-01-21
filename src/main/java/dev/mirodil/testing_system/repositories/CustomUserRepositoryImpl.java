@@ -24,7 +24,13 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     @Override
     public List<User> findAndSortUsersWithPagination(PageWithFilterRequest pageable) {
         // Base query
-        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM users");
+        StringBuilder queryBuilder = new StringBuilder("""
+                SELECT users.id AS user_id, email, password, fname, lname, gender, status, created_at,
+                       roles.id AS role_id, roles.name AS role_name
+                FROM users
+                LEFT JOIN roles ON users.role_id = roles.id
+                """
+        );
 
         // Add filters dynamically
         Map<String, String> filters = pageable.getFilters();
@@ -47,5 +53,23 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 new UserRowMapper(),
                 queryParams.toArray()
         );
+    }
+
+    @Override
+    public long countFilteredUsers(PageWithFilterRequest pageable) {
+        StringBuilder queryBuilder = new StringBuilder("SELECT count(*) FROM users");
+
+        // Add filters dynamically
+        Map<String, String> filters = pageable.getFilters();
+        List<Object> queryParams = new ArrayList<>(
+                appendWhereClause(queryBuilder, filters)
+        );
+
+        Long count = jdbcTemplate.queryForObject(
+                queryBuilder.toString(),
+                Long.class,
+                queryParams.toArray()
+        );
+        return count != null ? count : 0L;
     }
 }
