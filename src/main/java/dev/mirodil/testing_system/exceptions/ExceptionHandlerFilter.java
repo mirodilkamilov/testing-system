@@ -1,5 +1,6 @@
 package dev.mirodil.testing_system.exceptions;
 
+import dev.mirodil.testing_system.responses.GenericErrorResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.URI;
+
 
 @Component
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
@@ -23,14 +26,22 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
-            handleException(response, HttpStatus.UNAUTHORIZED, "Invalid JWT Token");
+            handleException(request, response, HttpStatus.UNAUTHORIZED, "Invalid JWT Token");
         } catch (InvalidTokenException | UserAccountBlocked | ResourceNotFoundException e) {
-            handleException(response, e.getStatusCode(), e.getMessage());
+            handleException(request, response, e.getStatusCode(), e.getMessage());
         }
     }
 
-    private void handleException(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+    private void handleException(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            HttpStatus status,
+            String message
+    ) throws IOException {
         response.setContentType("application/json");
-        response.sendError(status.value(), message);
+        response.setStatus(status.value());
+        URI path = URI.create(request.getRequestURL().toString());
+        String jsonResponse = GenericErrorResponse.getErrorDetailsJson(message, status, path);
+        response.getWriter().write(jsonResponse);
     }
 }

@@ -1,12 +1,14 @@
 package dev.mirodil.testing_system.responses;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,13 +26,24 @@ public class GenericErrorResponse {
             return new ResponseEntity<>(statusCode);
         }
 
-        Map<String, Object> jsonResponse = new HashMap<>();
-        jsonResponse.put("timestamp", new Date());
-        jsonResponse.put("status", statusCode.value());
-        jsonResponse.put("error", statusCode.getReasonPhrase());
-        jsonResponse.put("message", message);
-        jsonResponse.put("path", path);
-        return new ResponseEntity<>(jsonResponse, statusCode);
+        Map<String, Object> errorDetails = getErrorDetailsMap(message, statusCode, path);
+        return new ResponseEntity<>(errorDetails, statusCode);
+    }
+
+    public static Map<String, Object> getErrorDetailsMap(String message, HttpStatus statusCode, URI path) {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", Instant.now().toString());
+        errorDetails.put("status", statusCode.value());
+        errorDetails.put("error", statusCode.getReasonPhrase());
+        errorDetails.put("message", message);
+        errorDetails.put("path", path);
+        return errorDetails;
+    }
+
+    public static String getErrorDetailsJson(String message, HttpStatus statusCode, URI path) throws JsonProcessingException {
+        Map<String, Object> errorDetailsMap = getErrorDetailsMap(message, statusCode, path);
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(errorDetailsMap);
     }
 
     /**
