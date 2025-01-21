@@ -1,9 +1,9 @@
 package dev.mirodil.testing_system.validations;
 
-import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.services.UserService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
@@ -19,8 +19,8 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
             return false;
         }
         try {
-            userService.getUserByEmail(email);
-        } catch (ResourceNotFoundException e) {
+            userService.loadUserByUsername(email);
+        } catch (UsernameNotFoundException e) {
             return true;
         }
 

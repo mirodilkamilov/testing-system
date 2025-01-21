@@ -24,12 +24,19 @@ public class GlobalControllerExceptionHandler {
         return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), servletRequest);
     }
 
-    @ExceptionHandler({InvalidTokenException.class, GenericValidationError.class})
+    @ExceptionHandler({
+            InvalidTokenException.class,
+            GenericValidationError.class,
+            UnauthorizedException.class
+    })
     public ResponseEntity<Map<String, Object>> handleUserExceptions(ResponseStatusException e) {
         return GenericErrorResponse.returnResponse(e.getMessage(), e.getStatusCode(), servletRequest);
     }
 
-    @ExceptionHandler({BadCredentialsException.class, AccountLockedException.class})
+    @ExceptionHandler({
+            BadCredentialsException.class,
+            AccountLockedException.class
+    })
     public ResponseEntity<Map<String, Object>> handleUserExceptionsWithDefaultStatusCode(Exception e) {
         return GenericErrorResponse.returnResponse(e.getMessage(), HttpStatus.BAD_REQUEST, servletRequest);
     }

@@ -1,8 +1,10 @@
-package dev.mirodil.testing_system.models;
+package dev.mirodil.testing_system.models.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+@JsonDeserialize(using = UserGenderDeserializer.class)
 public enum UserGender {
     MALE("male"),
     FEMALE("female");
