@@ -24,7 +24,20 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+    private static final String[] WHITE_LIST_URL = {
+            "/auth/**",
+            "/test-taker/register",
+            "/error",
+            "/public",
 
+            "/v3/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html"};
     private final UserService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -61,12 +74,7 @@ public class SecurityConfig {
                                 ))
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers(
-                                        "/auth/**",
-                                        "/test-taker/register",
-                                        "/error",
-                                        "/public"
-                                ).permitAll()
+                                .requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers("/admin/**").hasRole(ADMIN.name())
                                 .requestMatchers("/test-taker/**").hasAnyRole(ADMIN.name(), TEST_TAKER.name())
                                 .anyRequest().authenticated()
