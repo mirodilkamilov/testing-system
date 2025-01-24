@@ -3,6 +3,7 @@ package dev.mirodil.testing_system.controllers;
 import dev.mirodil.testing_system.dtos.AuthResponseDTO;
 import dev.mirodil.testing_system.dtos.UserLoginRequestDTO;
 import dev.mirodil.testing_system.services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,15 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(
+            summary = "Login (for all user roles)",
+            description = "Authenticate using email and password. **Default Admin Credentials: email:** info@mirodil.dev, **password:** 12345"
+    )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequestDTO request, HttpServletRequest servletRequest) throws BadCredentialsException, AccountLockedException {
+    public ResponseEntity<?> login(
+            @Valid @RequestBody UserLoginRequestDTO request,
+            HttpServletRequest servletRequest
+    ) throws BadCredentialsException, AccountLockedException {
         AuthResponseDTO authResponseDTO = authService.authenticate(request, servletRequest);
         return ResponseEntity.ok(
                 new WrapResponseWithContentKey<>(authResponseDTO)
