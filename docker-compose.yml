@@ -43,15 +43,6 @@ services:
       networks:
          - testing-network
 
-#   nginx:
-#      image: nginx:1.26
-#      ports:
-#         - "80:80"
-#      volumes:
-#         - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-#      depends_on:
-#         - app
-
 networks:
    testing-network:
       driver: bridge
