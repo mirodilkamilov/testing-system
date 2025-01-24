@@ -73,6 +73,14 @@ character long:
 cp .env.example .env
 ```
 
+Run maven command to package the code as a JAR file. Note, I'm skipping tests since containerized PostgreSQL and Redis
+won't be
+running in this phase.
+
+```bash
+./mvnw clean package -DskipTests
+```
+
 Run the following command to build and start the docker containers (you can add `-d` option to run in detached mode):
 
 ```docker
