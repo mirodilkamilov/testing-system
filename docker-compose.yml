@@ -2,32 +2,36 @@ version: '3.8'
 
 services:
    app:
+      container_name: testing-system
       build:
          context: .
          dockerfile: docker/Dockerfile
       ports:
          - "8080:8080"
+      env_file:
+         - .env
       environment:
-         SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+         SPRING_DATASOURCE_URL: ${POSTGRES_URL}
          SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
          SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
          SECRET_KEY: ${SECRET_KEY}
          SPRING_DATA_REDIS_HOST: redis
-         SPRING_DATA_REDIS_PORT: 6379
       depends_on:
          - db
          - redis
+      networks:
+         - testing-network
 
    db:
       image: postgres:17.2
       container_name: postgres
       restart: always
-      ports:
-         - "5432:5432"
       environment:
          POSTGRES_DB: ${POSTGRES_DB}
          POSTGRES_USER: ${POSTGRES_USER}
          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      networks:
+         - testing-network
       volumes:
          - ./docker/postgres_data:/var/lib/postgresql/data
          - ./docker/sql:/docker-entrypoint-initdb.d
@@ -36,17 +40,21 @@ services:
       image: redis:7.4
       container_name: redis
       restart: always
-      ports:
-         - "6379:6379"
+      networks:
+         - testing-network
 
-   nginx:
-      image: nginx:1.26
-      ports:
-         - "80:80"
-      volumes:
-         - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-      depends_on:
-         - app
+#   nginx:
+#      image: nginx:1.26
+#      ports:
+#         - "80:80"
+#      volumes:
+#         - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+#      depends_on:
+#         - app
+
+networks:
+   testing-network:
+      driver: bridge
 
 volumes:
    postgres_data:
