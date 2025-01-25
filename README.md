@@ -1,22 +1,22 @@
 # Testing System
 
-**_Note:_** 🚧 _This project is a work in progress. Some interruptions may occur in the production environment._ 🚧
+**_Note:_** 🚧 _This project is under development. Service interruptions may occur in the production environment._ 🚧
 
 ## Overview
 
-The Testing System REST API is a backend application designed to manage testing activities, such as test creation,
-participation, and result evaluation. This project demonstrates proficiency in backend development using modern
-technologies and Spring Boot framework.
+The Testing System REST API is a backend application that manages test creation, participation, and result evaluation.
+This project showcases backend development expertise using modern technologies and the **Spring Boot framework**.
 
 ## Key Features
 
-- **User Management**: Admins manage accounts and assign tests; Test Takers participate in tests with autosave.
+- **User Management**: Admins control accounts and test assignments while test takers participate with automatic
+  progress saving.
 - **Test Management**: Admins create and assign tests with multiple question types (MCQ, Checkbox, True/False, Text).
 - **Results Management**: Automatic evaluation with pass/fail status and summaries.
 - **Secure and Scalable**: Role-based access control with little effort to scale, encrypted password storage, and
   modular design.
 
-For complete software requirements, you can read them ![here](Software%20Requirements%20Document.pdf).
+For a detailed breakdown of the software requirements, refer to [this document](Software%20Requirements%20Document.pdf).
 
 ## Tech Stack
 
@@ -34,7 +34,7 @@ For complete software requirements, you can read them ![here](Software%20Require
 
 ### Entity-Relationship Diagram (ERD)
 
-The following ER diagram outlines the core database structure of the Testing System:
+The following ER diagram shows the core database structure of the Testing System:
 ![ER Diagram](ER_Diagram.jpg)
 
 ### API Examples
