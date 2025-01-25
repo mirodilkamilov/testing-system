@@ -16,6 +16,8 @@ technologies and Spring Boot framework.
 - **Secure and Scalable**: Role-based access control with little effort to scale, encrypted password storage, and
   modular design.
 
+For complete software requirements, you can read them ![here](Software%20Requirements%20Document.pdf).
+
 ## Tech Stack
 
 - **Backend Framework**: Spring Boot 3
@@ -46,16 +48,17 @@ examples.
 
 ## Installation & Setup
 
-If you want to only access API, you can use already deployed application. But, if you still want to setup locally here
-is the steps you can follow:
+If you'd like to simply access the API, you can use the
+already [deployed application](https://testing.mirodil.dev/api/swagger-ui.html). However, if you prefer to set it
+up locally, follow the steps below.
 
 ### Prerequisites
 
-Before starting, ensure you have the following installed on your system:
+Before starting, ensure the following tools are installed on your system:
 
-1. [Docker](https://docs.docker.com/get-started/get-docker/): Version 20.10 or higher
+1. [**Docker**](https://docs.docker.com/get-started/get-docker/): Version 20.10 or higher
 
-2. Docker Compose: Version 1.29 or higher (if you installed Docker Desktop, then it comes out of the box)
+2. **Docker Compose**: Version 1.29 or higher (included with Docker Desktop)
 
 ### Steps
 
@@ -73,15 +76,14 @@ character long:
 cp .env.example .env
 ```
 
-Run maven command to package the code as a JAR file. Note, I'm skipping tests since containerized PostgreSQL and Redis
-won't be
-running in this phase.
+Use Maven to package the application as a JAR file. Skip tests during this step since containerized PostgreSQL and Redis
+won't be running yet:
 
 ```bash
 ./mvnw clean package -DskipTests
 ```
 
-Run the following command to build and start the docker containers (you can add `-d` option to run in detached mode):
+Build and start the Docker containers (you can add the -d option to run in detached mode):
 
 ```docker
 docker-compose up --build
