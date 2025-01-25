@@ -6,7 +6,10 @@ import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import dev.mirodil.testing_system.utils.ValidationUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +33,12 @@ public class UserManagementController {
 
     @PreAuthorize("hasAuthority('MANAGE_ALL_USERS')")
     @GetMapping("/users")
-    public Page<UserResponseDTO> getAllUsers(PageWithFilterRequest pageable) {
+    @PageableAsQueryParam
+    @Operation(summary = "Get all users",
+            description = "Retrieve a paginated list of users with optional sorting and filters (cannot add field in swagger-ui \uD83D\uDE05. So, recommend using my Postman collection).\n\nExample usage: users?page=0&size=7&sort=userId&email=info")
+    public Page<UserResponseDTO> getAllUsers(
+            @Parameter(hidden = true) PageWithFilterRequest pageable
+    ) {
         ValidationUtil.forceValidPageable(
                 pageable,
                 User.getAllowedSortAttributes(),

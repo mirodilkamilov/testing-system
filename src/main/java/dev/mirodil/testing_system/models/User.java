@@ -19,10 +19,10 @@ import java.util.Set;
 @Table("users")
 public class User implements UserDetails {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
-            "userId", "email", "userRole", "fname", "lname", "status", "created_at"
+            "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
     );
     private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
-            "userId", "email", "userRole", "fname", "lname", "status", "created_at"
+            "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
     );
 
     @Id
