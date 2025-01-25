@@ -98,6 +98,17 @@ To stop and remove the containers, run:
 docker-compose down
 ```
 
+### Frontend Integration
+
+To allow frontend developers to integrate with the backend during local development, CORS has been configured to permit
+requests from the following origins:
+
+- http://localhost:3000
+- http://127.0.0.1:3000
+
+If you're working on a frontend application, you can make API calls to the backend without encountering CORS-related
+issues. Ensure your frontend is running on one of the allowed origins above.
+
 ## Contribute
 
 I developed this project to showcase my Java skills and web technologies. Developers interested in building a
