@@ -44,6 +44,19 @@ public class User implements UserDetails {
     public User() {
     }
 
+    /**
+     * User Constructor only for reading a user
+     */
+    public User(Long id, String email, String password, Long roleId, String fname, String lname, UserGender gender, UserStatus status, Date createdAt) {
+        this(email, password, roleId, fname, lname, gender);
+        this.id = id;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * User constructor only for creating a new user (with default values to userStatus & createdAt)
+     */
     public User(String email, String password, Long roleId, String fname, String lname, UserGender gender) {
         this.email = email;
         this.password = password;
@@ -52,7 +65,7 @@ public class User implements UserDetails {
         this.lname = lname;
         this.gender = gender;
         this.status = UserStatus.ACTIVE;
-        createdAt = new Date();
+        this.createdAt = new Date();
     }
 
     public static Set<String> getAllowedSortAttributes() {
@@ -93,11 +106,19 @@ public class User implements UserDetails {
     }
 
     public UserRole getUserRoleName() {
+        if (role == null) {
+            return null;
+        }
+
         return role.getName();
     }
 
     public Long getRoleId() {
         return roleId;
+    }
+
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
     }
 
     public boolean isAdmin() {
