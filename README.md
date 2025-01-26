@@ -43,7 +43,7 @@ The following ER diagram shows the core database structure of the Testing System
 
 For exploring and testing complete API endpoints, visit
 the [Swagger UI](https://testing.mirodil.dev/api/swagger-ui.html)
-or [Postman collection](Testing%20System.postman_collection.json) with saved
+or [Postman collection](https://www.postman.com/mirodil-dev/workspace/testing-system) with saved
 examples.
 
 ## Installation & Setup

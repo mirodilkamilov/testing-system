@@ -30,7 +30,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                         - **Test Management**: Create and manage tests with diverse question types (MCQs, checkboxes, true/false, text-based).
                         - **Results Management**: Automated result evaluation with detailed summaries and pass/fail statuses.
                         
-                        Explore the API endpoints interactively via Swagger-UI or use the [Postman collection](https://github.com/mirodilkamilov/testing-system/blob/main/Testing%20System.postman_collection.json) for pre-configured examples. The source code is accessible through the [GitHub repository.](https://github.com/mirodilkamilov/testing-system)
+                        Explore the API endpoints interactively via Swagger-UI or use the [Postman collection](https://www.postman.com/mirodil-dev/workspace/testing-system) for pre-configured examples. The source code is accessible through the [GitHub repository.](https://github.com/mirodilkamilov/testing-system)
                         
                         **_Note: \uD83D\uDEA7 This project is a work in progress. Some interruptions may occur in the production environment. \uD83D\uDEA7_**""",
                 version = "1.0",
