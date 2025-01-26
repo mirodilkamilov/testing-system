@@ -1,36 +1,3 @@
-CREATE TABLE roles
-(
-    id   SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE
-);
-
-CREATE TABLE permissions
-(
-    id          SERIAL PRIMARY KEY,
-    name        VARCHAR(50) UNIQUE NOT NULL,
-    description VARCHAR(256)       NULL
-);
-
-CREATE TABLE role_permission
-(
-    role_id       BIGINT REFERENCES roles (id),
-    permission_id BIGINT REFERENCES permissions (id),
-    PRIMARY KEY (role_id, permission_id)
-);
-
-CREATE TABLE users
-(
-    id         SERIAL PRIMARY KEY,
-    email      VARCHAR(100) UNIQUE                             NOT NULL,
-    password   VARCHAR(256)                                    NOT NULL,
-    role_id    BIGINT REFERENCES roles (id),
-    fname      VARCHAR(100)                                    NOT NULL,
-    lname      VARCHAR(100)                                    NOT NULL,
-    gender     VARCHAR(10)                                     NOT NULL,
-    status     VARCHAR(50) DEFAULT 'ACTIVE'::CHARACTER VARYING NOT NULL,
-    created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP
-);
-
 INSERT INTO roles(name)
 VALUES ('ADMIN');
 INSERT INTO roles(name)
@@ -95,4 +62,12 @@ VALUES ('john.doe@gmail.com', '$2a$10$EF1x/Pd5OxIASv6Ui9aP2.fhyaMV1akRlnkfCu6om6
         'Kamilov', 'MALE', 'ACTIVE', '2025-01-14 12:41:03.940000'),
        ('mirodil@www.com', '$2a$10$r2VqD7QrtTzaxbDWzYSmz.Jy/xo3jCKcKbDhRs3sWdwRW/Hc.EERG', 2, 'Mirodil',
         'Kamilov', 'MALE', 'ACTIVE', '2025-01-14 12:16:31.864000');
+
+INSERT INTO test_events (test_taker_id, test_id, event_datetime, status, score, is_passed, started_at, finished_at,
+                         test_attempt)
+VALUES (1, 1, '2025-02-14 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
+       (2, 1, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
+       (3, 2, '2025-02-09 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
+       (3, 3, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
+       (4, 3, '2025-02-15 09:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL);
 
