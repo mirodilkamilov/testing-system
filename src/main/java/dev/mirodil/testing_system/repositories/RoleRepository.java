@@ -11,7 +11,7 @@ public interface RoleRepository extends CrudRepository<Role, Long> {
     String BASE_QUERY = """
                 SELECT r.id AS role_id, r.name AS role_name, p.id AS permission_id, p.name AS permission_name, p.description AS permission_description
                 FROM roles r
-                LEFT JOIN role_permission rp ON r.id = rp.role_id
+                LEFT JOIN role_permissions rp ON r.id = rp.role_id
                 LEFT JOIN permissions p ON rp.permission_id = p.id
             """;
 

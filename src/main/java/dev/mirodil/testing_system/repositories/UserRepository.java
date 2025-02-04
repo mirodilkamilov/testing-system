@@ -13,7 +13,7 @@ public interface UserRepository extends CrudRepository<User, Long>, CustomUserRe
                    array_agg(p.name) FILTER (WHERE p.name IS NOT NULL) AS permission_names
             FROM users
             LEFT JOIN roles ON users.role_id = roles.id
-            LEFT JOIN role_permission rp ON roles.id = rp.role_id
+            LEFT JOIN role_permissions rp ON roles.id = rp.role_id
             LEFT JOIN permissions p ON rp.permission_id = p.id
             """;
     String GROUP_BY_CLAUSE = " GROUP BY users.id, roles.id";

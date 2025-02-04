@@ -22,7 +22,7 @@ VALUES ('VIEW_PROFILE', 'Ability to view own profile.'),
        ('MANAGE_TEST_EVENTS', '(Assign and) manage test events assigned to test takers.'),
        ('MONITOR_TESTS', 'Monitor test takers during tests.');
 
-INSERT INTO role_permission(role_id, permission_id)
+INSERT INTO role_permissions(role_id, permission_id)
 VALUES (1, 1),
        (1, 2),
        (1, 5),
@@ -63,11 +63,33 @@ VALUES ('john.doe@gmail.com', '$2a$10$EF1x/Pd5OxIASv6Ui9aP2.fhyaMV1akRlnkfCu6om6
        ('mirodil@www.com', '$2a$10$r2VqD7QrtTzaxbDWzYSmz.Jy/xo3jCKcKbDhRs3sWdwRW/Hc.EERG', 2, 'Mirodil',
         'Kamilov', 'MALE', 'ACTIVE', '2025-01-14 12:16:31.864000');
 
+INSERT INTO tests(title, description, duration, no_of_questions, passing_percentage, should_shuffle,
+                  should_randomly_pick, deleted_at)
+VALUES ('Java Basics', 'A test covering basic Java concepts including syntax, data types, and control structures.',
+        60, 20, 70, TRUE, FALSE, NULL),
+       ('Spring Boot Fundamentals',
+        'Test on Spring Boot fundamentals, including configuration, annotations, and REST APIs.',
+        90, 25, 75, TRUE, TRUE, NULL),
+       ('PostgreSQL Advanced',
+        NULL, 75, 30, 80, FALSE, TRUE, NULL),
+       ('Data Structures and Algorithms',
+        'A test covering various data structures and algorithms like sorting, searching, and recursion.',
+        120, 40, 85, TRUE, FALSE, NULL),
+       ('DevOps and CI/CD', 'A test covering DevOps practices, CI/CD pipelines, and infrastructure automation.',
+        80, 25, 78, FALSE, TRUE, NULL),
+       ('Python Programming', 'A test on Python syntax, data structures, and object-oriented programming.',
+        70, 20, 72, TRUE, TRUE, NULL),
+       ('Software Engineering Principles',
+        'A test on software development methodologies, design patterns, and best practices.',
+        90, 30, 80, FALSE, FALSE, NULL);
+
 INSERT INTO test_events (test_taker_id, test_id, event_datetime, status, score, is_passed, started_at, finished_at,
                          test_attempt)
 VALUES (1, 1, '2025-02-14 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
        (2, 1, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
        (3, 2, '2025-02-09 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
        (3, 3, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
-       (4, 3, '2025-02-15 09:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL);
+       (4, 3, '2025-02-15 09:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
+       (5, 4, '2025-02-17 09:30:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL);
 
+-- "{\"test_taker_id\":1,\"test_id\":101,\"answers\":[{\"question_id\":1001,\"selected_option_id\":5001,\"is_correct\":true},{\"question_id\":1002,\"selected_option_id\":5005,\"is_correct\":false},{\"question_id\":1003,\"selected_option_id\":5009,\"is_correct\":true}],\"score\":75.0,\"is_passed\":true}"

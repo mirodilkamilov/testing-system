@@ -25,8 +25,8 @@ public class TestEvent {
     private String testAttempt;
     @Transient
     private User testTaker;
-//    @Transient
-//    private Test test;
+    @Transient
+    private Test test;
     //TODO: allowedFilters and allowedSorts
 
 
@@ -124,5 +124,13 @@ public class TestEvent {
 
     public void setTestTaker(User testTaker) {
         this.testTaker = testTaker;
+    }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
     }
 }
