@@ -1,9 +1,14 @@
 package dev.mirodil.testing_system.dtos;
 
+import dev.mirodil.testing_system.controllers.TestEventController;
 import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.models.enums.TestEventStatus;
 
+import java.net.URI;
 import java.util.Date;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public record TestEventResponseDTO(
         Long testEventId,
@@ -16,8 +21,9 @@ public record TestEventResponseDTO(
         Date startedAt,
         Date finishedAt,
         Date createdAt,
-        String testAttempt
-        // TODO: path
+        //@JsonInclude(JsonInclude.Include.NON_NULL) // TODO: think about it | casting string to json
+        String testAttempt,
+        URI path
 ) {
     public TestEventResponseDTO(TestEvent testEvent) {
         this(
@@ -31,7 +37,8 @@ public record TestEventResponseDTO(
                 testEvent.getStartedAt(),
                 testEvent.getFinishedAt(),
                 testEvent.getCreatedAt(),
-                testEvent.getTestAttempt()
+                testEvent.getTestAttempt(),
+                linkTo(methodOn(TestEventController.class).getTestEventById(testEvent.getId())).toUri()
         );
     }
 }

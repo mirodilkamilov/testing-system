@@ -5,6 +5,8 @@ import dev.mirodil.testing_system.models.Role;
 import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.models.enums.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 
 import java.sql.ResultSet;
@@ -15,6 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DataUtil {
+    private static final Logger logger = LoggerFactory.getLogger(DataUtil.class);
+
+
     public static void appendOrderByClause(StringBuilder queryBuilder, Sort sort) {
         if (sort.isEmpty()) {
             return;
@@ -95,8 +100,7 @@ public class DataUtil {
                 (Boolean) rs.getObject("is_passed"),
                 rs.getTimestamp("started_at"),
                 rs.getTimestamp("finished_at"),
-                rs.getTimestamp("test_event_created_at"),
-                rs.getString("test_attempt")
+                rs.getTimestamp("test_event_created_at")
         );
 
         User testTaker = new User(
@@ -110,9 +114,47 @@ public class DataUtil {
                 UserStatus.valueOf(rs.getString("user_status")),
                 rs.getTimestamp("user_created_at")
         );
-        testTaker.setRoleId(rs.getLong("role_id"));
+        if (hasColumn(rs, "test_attempt")) {
+            testEvent.setTestAttempt(rs.getString("test_attempt"));
+        }
+
+        if (isColumnSet(rs, "role_name")) {
+            testTaker.setUserRole(extractRoleFromResultSet(rs));
+        }
         testEvent.setTestTaker(testTaker);
 
         return testEvent;
+    }
+
+    /// Note: Int, Double, Boolean is assumed set even if it's null
+    public static boolean isColumnSet(ResultSet rs, String column) throws SQLException {
+        if (rs == null || column == null || column.trim().isEmpty()) {
+            return false;
+        }
+
+        if (!hasColumn(rs, column)) {
+            return false;
+        }
+
+        Object value = rs.getObject(column);
+        if (value == null) {
+            return false;
+        }
+
+        if (value instanceof String) {
+            return !((String) value).trim().isEmpty();
+        }
+
+        return true;
+    }
+
+    public static boolean hasColumn(ResultSet rs, String column) {
+        try {
+            rs.findColumn(column);
+            return true;
+        } catch (SQLException e) {
+            logger.debug("column doesn't exist {}", column);
+        }
+        return false;
     }
 }

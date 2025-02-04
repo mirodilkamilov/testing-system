@@ -1,6 +1,7 @@
 package dev.mirodil.testing_system.services;
 
 import dev.mirodil.testing_system.dtos.TestEventResponseDTO;
+import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.repositories.GenericRowMapper;
 import dev.mirodil.testing_system.repositories.TestEventRepository;
@@ -22,19 +23,12 @@ public class TestEventService {
     }
 
     public Page<TestEventResponseDTO> getTestEvents(PageWithFilterRequest pageable) {
-        StringBuilder queryBuilder = new StringBuilder("""
-                SELECT te.id AS test_event_id, test_taker_id, te.test_id AS test_id, event_datetime, te.status AS test_event_status,
-                      score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at, test_attempt,
-                      email, password, role_id, fname, lname, gender, u.status AS user_status, u.created_at AS user_created_at
-                FROM test_events te
-                JOIN users u ON u.id = te.test_taker_id
-                """
-        );
+        StringBuilder queryBuilder = TestEventRepository.getPaginationBaseQuery();
 
         RowMapper<TestEvent> testEventRowMapper = new GenericRowMapper<>(DataUtil::extractTestEventFromResultSet);
         List<TestEvent> testEvents = testEventRepository.findAndSortModelWithPagination(
                 pageable, queryBuilder, testEventRowMapper);
-        long totalElements = testEventRepository.countFilteredModel(pageable, new StringBuilder("SELECT count(*) FROM test_events"));
+        long totalElements = testEventRepository.countFilteredModel(pageable, TestEventRepository.getPaginationCountBaseQuery());
 
         List<TestEventResponseDTO> testEventsDTO = testEvents.stream()
                 .map(TestEventResponseDTO::new)
@@ -43,4 +37,10 @@ public class TestEventService {
         return new PageImpl<>(testEventsDTO, pageable, totalElements);
     }
 
+    public TestEventResponseDTO getTestEventById(Long id) {
+        TestEvent testEvent = testEventRepository.getTestEventsById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Test event not found with id: " + id)
+        );
+        return new TestEventResponseDTO(testEvent);
+    }
 }

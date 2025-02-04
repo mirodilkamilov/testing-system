@@ -3,6 +3,7 @@ package dev.mirodil.testing_system.models;
 import dev.mirodil.testing_system.models.enums.TestEventStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ public class TestEvent {
     private Long id;
     private Long testTakerId;
     private Long testId;
+    @Column("event_datetime")
     private Date eventDateTime;
     private TestEventStatus status;
     private Double score = null;
@@ -38,7 +40,7 @@ public class TestEvent {
         this.status = status;
     }
 
-    public TestEvent(Long id, Long testTakerId, Long testId, Date eventDateTime, TestEventStatus status, Double score, Boolean isPassed, Date startedAt, Date finishedAt, Date createdAt, String testAttempt) {
+    public TestEvent(Long id, Long testTakerId, Long testId, Date eventDateTime, TestEventStatus status, Double score, Boolean isPassed, Date startedAt, Date finishedAt, Date createdAt) {
         this(testTakerId, testId, eventDateTime, status);
         this.id = id;
         this.score = score;
@@ -46,7 +48,6 @@ public class TestEvent {
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
         this.createdAt = createdAt;
-        this.testAttempt = testAttempt;
     }
 
     public Long getId() {
