@@ -14,23 +14,27 @@ public class Test {
     private int duration;
     private int noOfQuestions;
     private int passingPercentage;
-    private boolean shouldShuffle;
-    private boolean shouldRandomlyPick;
+    private Boolean shouldShuffle;
+    private Boolean shouldRandomlyPick;
     private Date deleted_at;
 
     public Test() {
     }
 
-    public Test(String title, String description, int duration, int noOfQuestions, int passingPercentage, boolean shouldShuffle, boolean shouldRandomlyPick) {
+    /**
+     * Test Constructor for shallow reading
+     */
+    public Test(Long id, String title, int duration, int noOfQuestions, int passingPercentage) {
+        this.id = id;
         this.title = title;
-        this.description = description;
         this.duration = duration;
         this.noOfQuestions = noOfQuestions;
         this.passingPercentage = passingPercentage;
-        this.shouldShuffle = shouldShuffle;
-        this.shouldRandomlyPick = shouldRandomlyPick;
     }
 
+    /**
+     * Test Constructor for detailed reading
+     */
     public Test(Long id, String title, String description, int duration, int noOfQuestions, int passingPercentage, boolean shouldShuffle, boolean shouldRandomlyPick, Date deleted_at) {
         this(
                 title,
@@ -45,6 +49,19 @@ public class Test {
         this.deleted_at = deleted_at;
     }
 
+    /**
+     * Test constructor for creating a new test
+     */
+    public Test(String title, String description, int duration, int noOfQuestions, int passingPercentage, boolean shouldShuffle, boolean shouldRandomlyPick) {
+        this.title = title;
+        this.description = description;
+        this.duration = duration;
+        this.noOfQuestions = noOfQuestions;
+        this.passingPercentage = passingPercentage;
+        this.shouldShuffle = shouldShuffle;
+        this.shouldRandomlyPick = shouldRandomlyPick;
+    }
+
     public Long getId() {
         return id;
     }
@@ -57,6 +74,10 @@ public class Test {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getDuration() {
         return duration;
     }
@@ -65,23 +86,31 @@ public class Test {
         return noOfQuestions;
     }
 
-    public double getPassingPercentage() {
+    public int getPassingPercentage() {
         return passingPercentage;
     }
 
-    public boolean shouldShuffle() {
+    public Boolean shouldShuffle() {
         return shouldShuffle;
     }
 
-    public boolean shouldRandomlyPick() {
+    public void setShouldShuffle(Boolean shouldShuffle) {
+        this.shouldShuffle = shouldShuffle;
+    }
+
+    public Boolean shouldRandomlyPick() {
         return shouldRandomlyPick;
     }
 
-    public Date getDeleted_at() {
+    public void setShouldRandomlyPick(Boolean shouldRandomlyPick) {
+        this.shouldRandomlyPick = shouldRandomlyPick;
+    }
+
+    public Date getDeletedAt() {
         return deleted_at;
     }
 
-    public void setDeleted_at(Date deleted_at) {
+    public void setDeletedAt(Date deleted_at) {
         this.deleted_at = deleted_at;
     }
 }

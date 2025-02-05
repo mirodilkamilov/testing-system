@@ -13,7 +13,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public record TestEventResponseDTO(
         Long testEventId,
         UserResponseDTO testTaker,
-        Long testId,
+        TestResponseDTO test,
         Date eventDatetime,
         TestEventStatus status,
         Double score,
@@ -29,7 +29,7 @@ public record TestEventResponseDTO(
         this(
                 testEvent.getId(),
                 new UserResponseDTO(testEvent.getTestTaker()),
-                testEvent.getTestId(),
+                new TestResponseDTO(testEvent.getTest()),
                 testEvent.getEventDateTime(),
                 testEvent.getStatus(),
                 testEvent.getScore(),

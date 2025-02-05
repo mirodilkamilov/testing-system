@@ -45,7 +45,17 @@ public class User implements UserDetails {
     }
 
     /**
-     * User Constructor only for reading a user
+     * User Constructor for shallow reading
+     */
+    public User(Long id, String email, String fname, String lname) {
+        this.id = id;
+        this.email = email;
+        this.fname = fname;
+        this.lname = lname;
+    }
+
+    /**
+     * User Constructor for detailed reading
      */
     public User(Long id, String email, String password, Long roleId, String fname, String lname, UserGender gender, UserStatus status, Date createdAt) {
         this(email, password, roleId, fname, lname, gender);
@@ -143,6 +153,10 @@ public class User implements UserDetails {
 
     public UserGender getGender() {
         return gender;
+    }
+
+    public void setGender(UserGender gender) {
+        this.gender = gender;
     }
 
     public UserStatus getStatus() {

@@ -1,9 +1,6 @@
 package dev.mirodil.testing_system.utils;
 
-import dev.mirodil.testing_system.models.Permission;
-import dev.mirodil.testing_system.models.Role;
-import dev.mirodil.testing_system.models.TestEvent;
-import dev.mirodil.testing_system.models.User;
+import dev.mirodil.testing_system.models.*;
 import dev.mirodil.testing_system.models.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,10 +62,7 @@ public class DataUtil {
                 UserStatus.valueOf(rs.getString("status")),
                 rs.getTimestamp("created_at")
         );
-        Role role = new Role(
-                rs.getLong("role_id"),
-                UserRole.valueOf(rs.getString("role_name"))
-        );
+        Role role = extractRoleFromResultSet(rs);
         user.setUserRole(role);
 
         return user;
@@ -102,28 +96,52 @@ public class DataUtil {
                 rs.getTimestamp("finished_at"),
                 rs.getTimestamp("test_event_created_at")
         );
-
-        User testTaker = new User(
-                rs.getLong("test_taker_id"),
-                rs.getString("email"),
-                rs.getString("password"),
-                rs.getLong("role_id"),
-                rs.getString("fname"),
-                rs.getString("lname"),
-                UserGender.valueOf(rs.getString("gender")),
-                UserStatus.valueOf(rs.getString("user_status")),
-                rs.getTimestamp("user_created_at")
-        );
         if (hasColumn(rs, "test_attempt")) {
             testEvent.setTestAttempt(rs.getString("test_attempt"));
         }
 
+        testEvent.setTestTaker(extractTestTakerFromResultSet(rs));
+
+        testEvent.setTest(extractTestFromResultSet(rs));
+
+        return testEvent;
+    }
+
+    private static User extractTestTakerFromResultSet(ResultSet rs) throws SQLException {
+        User testTaker = new User(
+                rs.getLong("test_taker_id"),
+                rs.getString("email"),
+                rs.getString("fname"),
+                rs.getString("lname")
+        );
+        String[] otherUserColumns = {"gender", "user_status", "user_created_at"};
+        if (hasColumns(rs, otherUserColumns)) {
+            testTaker.setGender(UserGender.valueOf(rs.getString("gender")));
+            testTaker.setUserStatus(UserStatus.valueOf(rs.getString("user_status")));
+            testTaker.setCreatedAt(rs.getTimestamp("user_created_at"));
+        }
         if (isColumnSet(rs, "role_name")) {
             testTaker.setUserRole(extractRoleFromResultSet(rs));
         }
-        testEvent.setTestTaker(testTaker);
 
-        return testEvent;
+        return testTaker;
+    }
+
+    public static Test extractTestFromResultSet(ResultSet rs) throws SQLException {
+        Test test = new Test(
+                rs.getLong("test_id"),
+                rs.getString("title"),
+                rs.getInt("duration"),
+                rs.getInt("no_of_questions"),
+                rs.getInt("passing_percentage")
+        );
+        String[] otherTestColumns = {"description", "should_shuffle", "should_randomly_pick", "deleted_at"};
+        if (hasColumns(rs, otherTestColumns)) {
+            test.setDeletedAt(rs.getTimestamp("deleted_at"));
+            test.setShouldShuffle(rs.getBoolean("should_shuffle"));
+            test.setShouldRandomlyPick(rs.getBoolean("should_randomly_pick"));
+        }
+        return test;
     }
 
     /// Note: Int, Double, Boolean is assumed set even if it's null
@@ -156,5 +174,14 @@ public class DataUtil {
             logger.debug("column doesn't exist {}", column);
         }
         return false;
+    }
+
+    public static boolean hasColumns(ResultSet rs, String[] columns) {
+        for (String column : columns) {
+            if (!hasColumn(rs, column)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
