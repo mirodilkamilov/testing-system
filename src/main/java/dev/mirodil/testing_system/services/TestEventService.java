@@ -3,13 +3,10 @@ package dev.mirodil.testing_system.services;
 import dev.mirodil.testing_system.dtos.TestEventResponseDTO;
 import dev.mirodil.testing_system.exceptions.ResourceNotFoundException;
 import dev.mirodil.testing_system.models.TestEvent;
-import dev.mirodil.testing_system.repositories.GenericRowMapper;
 import dev.mirodil.testing_system.repositories.TestEventRepository;
-import dev.mirodil.testing_system.utils.DataUtil;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +20,8 @@ public class TestEventService {
     }
 
     public Page<TestEventResponseDTO> getTestEvents(PageWithFilterRequest pageable) {
-        StringBuilder queryBuilder = TestEventRepository.getPaginationBaseQuery();
-
-        RowMapper<TestEvent> testEventRowMapper = new GenericRowMapper<>(DataUtil::extractTestEventFromResultSet);
-        List<TestEvent> testEvents = testEventRepository.findAndSortModelWithPagination(
-                pageable, queryBuilder, testEventRowMapper);
-        long totalElements = testEventRepository.countFilteredModel(pageable, TestEventRepository.getPaginationCountBaseQuery());
+        List<TestEvent> testEvents = testEventRepository.findAndSortTestEventsWithPagination(pageable);
+        long totalElements = testEventRepository.countFilteredTestEvents(pageable);
 
         List<TestEventResponseDTO> testEventsDTO = testEvents.stream()
                 .map(TestEventResponseDTO::new)

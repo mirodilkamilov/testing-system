@@ -35,7 +35,7 @@ public class Test {
     /**
      * Test Constructor for detailed reading
      */
-    public Test(Long id, String title, String description, int duration, int noOfQuestions, int passingPercentage, boolean shouldShuffle, boolean shouldRandomlyPick, Date deleted_at) {
+    public Test(Long id, String title, String description, int duration, int noOfQuestions, int passingPercentage, Boolean shouldShuffle, Boolean shouldRandomlyPick, Date deleted_at) {
         this(
                 title,
                 description,
@@ -52,7 +52,7 @@ public class Test {
     /**
      * Test constructor for creating a new test
      */
-    public Test(String title, String description, int duration, int noOfQuestions, int passingPercentage, boolean shouldShuffle, boolean shouldRandomlyPick) {
+    public Test(String title, String description, int duration, int noOfQuestions, int passingPercentage, Boolean shouldShuffle, Boolean shouldRandomlyPick) {
         this.title = title;
         this.description = description;
         this.duration = duration;

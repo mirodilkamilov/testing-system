@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface TestEventRepository extends CrudRepository<TestEvent, Long>, GenericRepositoryWithPagination<TestEvent> {
+public interface TestEventRepository extends CrudRepository<TestEvent, Long>, CustomTestEventRepository {
     String GET_DETAILED_BASE_QUERY = """
             SELECT te.id AS test_event_id, test_taker_id, te.test_id AS test_id, event_datetime, te.status AS test_event_status,
                   score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at, test_attempt,
@@ -18,24 +18,7 @@ public interface TestEventRepository extends CrudRepository<TestEvent, Long>, Ge
             JOIN tests ON tests.id = te.test_id
             """;
 
-    static StringBuilder getPaginationBaseQuery() {
-        return new StringBuilder("""
-                SELECT te.id AS test_event_id, event_datetime, te.status AS test_event_status,
-                      score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at,
-                      test_taker_id, email, fname, lname,
-                      te.test_id AS test_id, title, duration, no_of_questions, passing_percentage
-                FROM test_events te
-                JOIN users u ON u.id = te.test_taker_id
-                JOIN tests ON tests.id = te.test_id
-                """
-        );
-    }
-
-    static StringBuilder getPaginationCountBaseQuery() {
-        return new StringBuilder("SELECT count(*) FROM test_events");
-    }
-
     @Query(value = GET_DETAILED_BASE_QUERY + " WHERE te.id = :id",
             rowMapperRef = "testEventRowMapper")
-    Optional<TestEvent> getTestEventsById(Long id); // TODO: add more data: testTaker
+    Optional<TestEvent> getTestEventsById(Long id);
 }

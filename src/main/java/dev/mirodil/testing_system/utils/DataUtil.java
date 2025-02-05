@@ -128,20 +128,17 @@ public class DataUtil {
     }
 
     public static Test extractTestFromResultSet(ResultSet rs) throws SQLException {
-        Test test = new Test(
+        return new Test(
                 rs.getLong("test_id"),
                 rs.getString("title"),
+                hasColumn(rs, "description") ? rs.getString("description") : null,
                 rs.getInt("duration"),
                 rs.getInt("no_of_questions"),
-                rs.getInt("passing_percentage")
+                rs.getInt("passing_percentage"),
+                hasColumn(rs, "should_shuffle") ? rs.getBoolean("should_shuffle") : null,
+                hasColumn(rs, "should_randomly_pick") ? rs.getBoolean("should_randomly_pick") : null,
+                hasColumn(rs, "deleted_at") ? rs.getTimestamp("deleted_at") : null
         );
-        String[] otherTestColumns = {"description", "should_shuffle", "should_randomly_pick", "deleted_at"};
-        if (hasColumns(rs, otherTestColumns)) {
-            test.setDeletedAt(rs.getTimestamp("deleted_at"));
-            test.setShouldShuffle(rs.getBoolean("should_shuffle"));
-            test.setShouldRandomlyPick(rs.getBoolean("should_randomly_pick"));
-        }
-        return test;
     }
 
     /// Note: Int, Double, Boolean is assumed set even if it's null
