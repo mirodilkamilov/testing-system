@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Date;
+import java.util.List;
 
 @Table("test_events")
 public class TestEvent {
@@ -22,7 +23,7 @@ public class TestEvent {
     private Date startedAt;
     private Date finishedAt;
     private Date createdAt;
-    private String testAttempt;
+    private List<TestAttempt> testAttempt;
     @Transient
     private User testTaker;
     @Transient
@@ -110,11 +111,11 @@ public class TestEvent {
         return createdAt;
     }
 
-    public String getTestAttempt() {
+    public List<TestAttempt> getTestAttempt() {
         return testAttempt;
     }
 
-    public void setTestAttempt(String testAttempt) {
+    public void setTestAttempt(List<TestAttempt> testAttempt) {
         this.testAttempt = testAttempt;
     }
 

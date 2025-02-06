@@ -1,5 +1,7 @@
 package dev.mirodil.testing_system.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mirodil.testing_system.models.*;
 import dev.mirodil.testing_system.models.enums.*;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 public class DataUtil {
     private static final Logger logger = LoggerFactory.getLogger(DataUtil.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     public static void appendOrderByClause(StringBuilder queryBuilder, Sort sort) {
@@ -97,7 +100,8 @@ public class DataUtil {
                 rs.getTimestamp("test_event_created_at")
         );
         if (hasColumn(rs, "test_attempt")) {
-            testEvent.setTestAttempt(rs.getString("test_attempt"));
+            List<TestAttempt> testAttempt = extractTestAttemptFromResultSet(rs);
+            testEvent.setTestAttempt(testAttempt);
         }
 
         testEvent.setTestTaker(extractTestTakerFromResultSet(rs));
@@ -105,6 +109,20 @@ public class DataUtil {
         testEvent.setTest(extractTestFromResultSet(rs));
 
         return testEvent;
+    }
+
+    private static List<TestAttempt> extractTestAttemptFromResultSet(ResultSet rs) throws SQLException {
+        String testAttemptJson = rs.getString("test_attempt");
+        if (testAttemptJson != null && !testAttemptJson.isEmpty()) {
+            try {
+                return objectMapper.readValue(testAttemptJson, new TypeReference<>() {
+                });
+            } catch (Exception e) {
+                throw new SQLException("Failed to deserialize test_attempt JSON", e);
+            }
+        }
+
+        return List.of();
     }
 
     private static User extractTestTakerFromResultSet(ResultSet rs) throws SQLException {

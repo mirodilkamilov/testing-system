@@ -1,11 +1,14 @@
 package dev.mirodil.testing_system.dtos;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import dev.mirodil.testing_system.controllers.TestEventController;
+import dev.mirodil.testing_system.models.TestAttempt;
 import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.models.enums.TestEventStatus;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -21,8 +24,9 @@ public record TestEventResponseDTO(
         Date startedAt,
         Date finishedAt,
         Date createdAt,
-        //@JsonInclude(JsonInclude.Include.NON_NULL) // TODO: think about it | casting string to json
-        String testAttempt,
+        // TODO: create separate TestAttemptDTO (with detailed questions and their options)
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        List<TestAttempt> testAttempt,
         URI path
 ) {
     public TestEventResponseDTO(TestEvent testEvent) {

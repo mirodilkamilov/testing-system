@@ -28,4 +28,10 @@ public class TestEventController {
         TestEventResponseDTO testEventDTO = testEventService.getTestEventById(id);
         return new WrapResponseWithContentKey<>(testEventDTO);
     }
+
+    @GetMapping("/test-events/{id}/test-attempt")
+    public WrapResponseWithContentKey<?> getTestAttempt(@PathVariable Long id) {
+        // TODO: implement
+        return new WrapResponseWithContentKey<>(null);
+    }
 }

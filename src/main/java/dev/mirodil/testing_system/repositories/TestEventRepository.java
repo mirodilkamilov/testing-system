@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface TestEventRepository extends CrudRepository<TestEvent, Long>, CustomTestEventRepository {
     String GET_DETAILED_BASE_QUERY = """
             SELECT te.id AS test_event_id, test_taker_id, te.test_id AS test_id, event_datetime, te.status AS test_event_status,
-                  score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at, test_attempt,
+                  score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at,
                   email, password, role_id, roles.name AS role_name, fname, lname, gender, u.status AS user_status, u.created_at AS user_created_at,
                   title, description, duration, no_of_questions, passing_percentage, should_shuffle, should_randomly_pick, deleted_at
             FROM test_events te
