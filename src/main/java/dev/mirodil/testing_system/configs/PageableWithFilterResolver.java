@@ -32,6 +32,7 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
 
         Map<String, String> filters = webRequest.getParameterMap().entrySet().stream()
                 .filter(entry -> !entry.getKey().equals("page") && !entry.getKey().equals("size") && !entry.getKey().equals("sort"))
+                .filter(entry -> entry.getValue().length > 0 && !entry.getValue()[0].isBlank()) // Remove empty values
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue()[0]));
 
         return new PageWithFilterRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort(), filters);

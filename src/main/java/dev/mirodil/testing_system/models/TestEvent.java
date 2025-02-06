@@ -8,9 +8,19 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Table("test_events")
 public class TestEvent {
+    private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
+            "testEventId", "testTakerId", "testId", "eventDatetime", "testEventStatus", "isPassed", "testEventCreatedAt",
+            "email", "fname", "lname", "title"
+    );
+    private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
+            "testEventStatus", "email", "fname", "lname", "title"
+    );
+    // TODO: add custom eventBetweenDatetime, isPassed filter
+
     @Id
     private Long id;
     private Long testTakerId;
@@ -29,8 +39,6 @@ public class TestEvent {
     private User testTaker;
     @Transient
     private Test test;
-    //TODO: allowedFilters and allowedSorts
-
 
     public TestEvent() {
     }
@@ -51,6 +59,14 @@ public class TestEvent {
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
         this.createdAt = createdAt;
+    }
+
+    public static Set<String> getAllowedSortAttributes() {
+        return ALLOWED_SORT_ATTRIBUTES;
+    }
+
+    public static Set<String> getAllowedFilterAttributes() {
+        return ALLOWED_FILTER_ATTRIBUTES;
     }
 
     public Long getId() {
@@ -85,12 +101,20 @@ public class TestEvent {
         this.scorePoints = scorePoints;
     }
 
-    public Boolean getPassed() {
+    public Integer getScorePercentage() {
+        return scorePercentage;
+    }
+
+    public void setScorePercentage(Integer scorePercentage) {
+        this.scorePercentage = scorePercentage;
+    }
+
+    public Boolean getIsPassed() {
         return isPassed;
     }
 
-    public void setPassed(Boolean passed) {
-        isPassed = passed;
+    public void setIsPassed(Boolean isPassed) {
+        this.isPassed = isPassed;
     }
 
     public Date getStartedAt() {
@@ -135,13 +159,5 @@ public class TestEvent {
 
     public void setTest(Test test) {
         this.test = test;
-    }
-
-    public Integer getScorePercentage() {
-        return scorePercentage;
-    }
-
-    public void setScorePercentage(Integer scorePercentage) {
-        this.scorePercentage = scorePercentage;
     }
 }

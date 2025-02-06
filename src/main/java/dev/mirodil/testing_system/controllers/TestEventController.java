@@ -1,8 +1,10 @@
 package dev.mirodil.testing_system.controllers;
 
 import dev.mirodil.testing_system.dtos.TestEventResponseDTO;
+import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.services.TestEventService;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
+import dev.mirodil.testing_system.utils.ValidationUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,11 @@ public class TestEventController {
 
     @GetMapping("/test-events")
     public Page<TestEventResponseDTO> getAllTestEvents(PageWithFilterRequest pageable) {
+        ValidationUtil.forceValidPageable(
+                pageable,
+                TestEvent.getAllowedSortAttributes(),
+                TestEvent.getAllowedFilterAttributes()
+        );
         return testEventService.getTestEvents(pageable);
     }
 

@@ -31,17 +31,27 @@ public class DataUtil {
                 .collect(Collectors.joining(", ")));
     }
 
+    /// All passed filters assumed to be VARCHAR and therefore filtered with LIKE operator.
+    /// You should modify base query for your custom filter accordingly, before passing it to here.
     public static List<String> appendWhereClause(StringBuilder queryBuilder, Map<String, String> filters) {
         List<String> filterValues = new ArrayList<>();
-        if (!filters.isEmpty()) {
-            queryBuilder.append(" WHERE ");
-            queryBuilder.append(filters.entrySet().stream()
-                    .map(entry -> {
-                        filterValues.add("%" + entry.getValue() + "%"); // Add the filter value as a parameter
-                        return convertToSnakeCase(entry.getKey()) + " LIKE ?";
-                    })
-                    .collect(Collectors.joining(" AND ")));
+        if (filters.isEmpty()) {
+            return filterValues;
         }
+
+        boolean hasWhereClause = queryBuilder.toString().toLowerCase().contains(" where ");
+        if (!hasWhereClause) {
+            queryBuilder.append(" WHERE ");
+        } else {
+            queryBuilder.append(" AND ");
+        }
+
+        queryBuilder.append(filters.entrySet().stream()
+                .map(entry -> {
+                    filterValues.add("%" + entry.getValue() + "%"); // Add the filter value as a parameter
+                    return convertToSnakeCase(entry.getKey()) + " LIKE ?";
+                })
+                .collect(Collectors.joining(" AND ")));
 
         return filterValues;
     }
