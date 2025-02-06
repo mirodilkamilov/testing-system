@@ -63,9 +63,3 @@ public class UserManagementController {
         );
     }
 }
-
-/*
- TODO:
- 3. Tests model
- 4. TestEvents model
- */

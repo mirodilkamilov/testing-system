@@ -1,14 +1,11 @@
 package dev.mirodil.testing_system.dtos;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import dev.mirodil.testing_system.controllers.TestEventController;
-import dev.mirodil.testing_system.models.TestAttempt;
 import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.models.enums.TestEventStatus;
 
 import java.net.URI;
 import java.util.Date;
-import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -26,8 +23,6 @@ public record TestEventResponseDTO(
         Date finishedAt,
         Date createdAt,
         // TODO: create separate TestAttemptDTO (with detailed questions and their options)
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        List<TestAttempt> testAttempt,
         URI path
 ) {
     public TestEventResponseDTO(TestEvent testEvent) {
@@ -39,11 +34,10 @@ public record TestEventResponseDTO(
                 testEvent.getStatus(),
                 testEvent.getScorePoints(),
                 testEvent.getScorePercentage(),
-                testEvent.getPassed(),
+                testEvent.getIsPassed(),
                 testEvent.getStartedAt(),
                 testEvent.getFinishedAt(),
                 testEvent.getCreatedAt(),
-                testEvent.getTestAttempt(),
                 linkTo(methodOn(TestEventController.class).getTestEventById(testEvent.getId())).toUri()
         );
     }
