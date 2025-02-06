@@ -31,7 +31,7 @@ public class CustomTestEventRepositoryImpl implements CustomTestEventRepository 
     private StringBuilder getBaseQuery() {
         return new StringBuilder("""
                 SELECT te.id AS test_event_id, event_datetime, te.status AS test_event_status,
-                      score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at,
+                      score_points, score_percentage, is_passed, started_at, finished_at, te.created_at AS test_event_created_at,
                       test_taker_id, email, fname, lname,
                       te.test_id AS test_id, title, duration, no_of_questions, passing_percentage
                 FROM test_events te

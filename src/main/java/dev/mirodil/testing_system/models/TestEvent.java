@@ -18,7 +18,8 @@ public class TestEvent {
     @Column("event_datetime")
     private Date eventDateTime;
     private TestEventStatus status;
-    private Double score = null;
+    private Float scorePoints = null;
+    private Integer scorePercentage = null;
     private Boolean isPassed = null;
     private Date startedAt;
     private Date finishedAt;
@@ -41,10 +42,11 @@ public class TestEvent {
         this.status = status;
     }
 
-    public TestEvent(Long id, Long testTakerId, Long testId, Date eventDateTime, TestEventStatus status, Double score, Boolean isPassed, Date startedAt, Date finishedAt, Date createdAt) {
+    public TestEvent(Long id, Long testTakerId, Long testId, Date eventDateTime, TestEventStatus status, Float scorePoints, Integer scorePercentage, Boolean isPassed, Date startedAt, Date finishedAt, Date createdAt) {
         this(testTakerId, testId, eventDateTime, status);
         this.id = id;
-        this.score = score;
+        this.scorePoints = scorePoints;
+        this.scorePercentage = scorePercentage;
         this.isPassed = isPassed;
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
@@ -75,12 +77,12 @@ public class TestEvent {
         this.status = status;
     }
 
-    public Double getScore() {
-        return score;
+    public Float getScorePoints() {
+        return scorePoints;
     }
 
-    public void setScore(Double score) {
-        this.score = score;
+    public void setScorePoints(Float scorePoints) {
+        this.scorePoints = scorePoints;
     }
 
     public Boolean getPassed() {
@@ -133,5 +135,13 @@ public class TestEvent {
 
     public void setTest(Test test) {
         this.test = test;
+    }
+
+    public Integer getScorePercentage() {
+        return scorePercentage;
+    }
+
+    public void setScorePercentage(Integer scorePercentage) {
+        this.scorePercentage = scorePercentage;
     }
 }

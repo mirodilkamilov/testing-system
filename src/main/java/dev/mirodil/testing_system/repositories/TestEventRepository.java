@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface TestEventRepository extends CrudRepository<TestEvent, Long>, CustomTestEventRepository {
     String GET_DETAILED_BASE_QUERY = """
-            SELECT te.id AS test_event_id, test_taker_id, te.test_id AS test_id, event_datetime, te.status AS test_event_status,
-                  score, is_passed, started_at, finished_at, te.created_at AS test_event_created_at,
-                  email, password, role_id, roles.name AS role_name, fname, lname, gender, u.status AS user_status, u.created_at AS user_created_at,
-                  title, description, duration, no_of_questions, passing_percentage, should_shuffle, should_randomly_pick, deleted_at
+            SELECT te.id AS test_event_id, event_datetime, te.status AS test_event_status,
+                  score_points, score_percentage, is_passed, started_at, finished_at, te.created_at AS test_event_created_at,
+                  test_taker_id, email, password, role_id, roles.name AS role_name, fname, lname, gender, u.status AS user_status, u.created_at AS user_created_at,
+                  te.test_id AS test_id, title, description, duration, no_of_questions, passing_percentage, should_shuffle, should_randomly_pick, deleted_at
             FROM test_events te
             JOIN users u ON u.id = te.test_taker_id
             JOIN roles ON roles.id = u.role_id

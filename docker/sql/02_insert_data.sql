@@ -83,13 +83,34 @@ VALUES ('Java Basics', 'A test covering basic Java concepts including syntax, da
         'A test on software development methodologies, design patterns, and best practices.',
         90, 30, 80, FALSE, FALSE, NULL);
 
-INSERT INTO test_events (test_taker_id, test_id, event_datetime, status, score, is_passed, started_at, finished_at,
-                         test_attempt)
-VALUES (1, 1, '2025-02-14 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
-       (2, 1, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
-       (3, 2, '2025-02-09 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
-       (3, 3, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
-       (4, 3, '2025-02-15 09:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL),
-       (5, 4, '2025-02-17 09:30:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO test_events (test_taker_id, test_id, event_datetime, status, score_points, score_percentage, is_passed,
+                         started_at, finished_at, test_attempt)
+VALUES (1, 1, '2025-02-06 14:00:00', 'COMPLETED', 16.5, 75, TRUE, '2025-02-06 14:02:10', '2025-02-06 15:02:00',
+        '[
+          {
+            "question_id": 1001,
+            "selected_option_id": 5001,
+            "is_correct": true
+          },
+          {
+            "question_id": 1002,
+            "selected_option_id": 5005,
+            "is_correct": false
+          },
+          {
+            "question_id": 1003,
+            "selected_option_id": 5009,
+            "is_correct": true
+          },
+          {
+            "question_id": 1004,
+            "selected_option_id": 5011,
+            "is_correct": true
+          }
+        ]'),
+       (2, 1, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL, NULL),
+       (3, 2, '2025-02-09 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL, NULL),
+       (3, 3, '2025-02-10 14:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL, NULL),
+       (4, 3, '2025-02-15 09:00:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL, NULL),
+       (5, 4, '2025-02-17 09:30:00', 'SCHEDULED', NULL, NULL, NULL, NULL, NULL, NULL);
 
--- "{\"test_taker_id\":1,\"test_id\":101,\"answers\":[{\"question_id\":1001,\"selected_option_id\":5001,\"is_correct\":true},{\"question_id\":1002,\"selected_option_id\":5005,\"is_correct\":false},{\"question_id\":1003,\"selected_option_id\":5009,\"is_correct\":true}],\"score\":75.0,\"is_passed\":true}"

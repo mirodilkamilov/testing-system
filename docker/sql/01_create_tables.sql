@@ -47,17 +47,18 @@ CREATE TABLE tests
 
 CREATE TABLE test_events
 (
-    id             SERIAL PRIMARY KEY,
-    test_taker_id  BIGINT REFERENCES users (id)                       NOT NULL,
-    test_id        BIGINT                                             REFERENCES tests (id) ON DELETE SET NULL,
-    event_datetime TIMESTAMP                                          NOT NULL,
-    status         VARCHAR(50) DEFAULT 'SCHEDULED'::CHARACTER VARYING NOT NULL,
-    score          DOUBLE PRECISION                                   NULL,
-    is_passed      BOOLEAN                                            NULL,
-    started_at     TIMESTAMP                                          NULL,
-    finished_at    TIMESTAMP                                          NULL,
-    created_at     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-    test_attempt   jsonb                                              NULL
+    id               SERIAL PRIMARY KEY,
+    test_taker_id    BIGINT REFERENCES users (id)                       NOT NULL,
+    test_id          BIGINT                                             REFERENCES tests (id) ON DELETE SET NULL,
+    event_datetime   TIMESTAMP                                          NOT NULL,
+    status           VARCHAR(50) DEFAULT 'SCHEDULED'::CHARACTER VARYING NOT NULL,
+    score_points     REAL                                               NULL,
+    score_percentage INTEGER                                            NULL,
+    is_passed        BOOLEAN                                            NULL,
+    started_at       TIMESTAMP                                          NULL,
+    finished_at      TIMESTAMP                                          NULL,
+    created_at       TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    test_attempt     jsonb                                              NULL
 );
 
 CREATE TABLE question_types
@@ -74,7 +75,7 @@ CREATE TABLE questions
     title            VARCHAR(256) NOT NULL,
     description      TEXT         NULL,
     image            VARCHAR(256) NULL,
-    point            FLOAT        NOT NULL
+    point            REAL         NOT NULL
 );
 
 CREATE TABLE options
