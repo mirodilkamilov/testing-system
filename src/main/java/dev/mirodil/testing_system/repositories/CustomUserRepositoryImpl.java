@@ -33,7 +33,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         );
 
         // Add filters dynamically
-        Map<String, String> filters = pageable.getFilters();
+        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );
@@ -60,7 +60,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         StringBuilder queryBuilder = new StringBuilder("SELECT count(*) FROM users");
 
         // Add filters dynamically
-        Map<String, String> filters = pageable.getFilters();
+        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );

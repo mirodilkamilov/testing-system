@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Table("test_events")
@@ -16,10 +17,15 @@ public class TestEvent {
             "testEventId", "testTakerId", "testId", "eventDatetime", "testEventStatus", "isPassed", "testEventCreatedAt",
             "email", "fname", "lname", "title"
     );
-    private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
-            "testEventStatus", "email", "fname", "lname", "title"
+    private static final Map<String, Class<?>> ALLOWED_FILTER_ATTRIBUTES = Map.of(
+            "testEventStatus", String.class,
+            "isPassed", Boolean.class,
+            "email", String.class,
+            "fname", String.class,
+            "lname", String.class,
+            "title", String.class
     );
-    // TODO: add custom eventBetweenDatetime, isPassed filter
+    // TODO: add custom eventBetweenDatetime, enums - testEventStatus (re-think) filter
 
     @Id
     private Long id;
@@ -65,7 +71,7 @@ public class TestEvent {
         return ALLOWED_SORT_ATTRIBUTES;
     }
 
-    public static Set<String> getAllowedFilterAttributes() {
+    public static Map<String, Class<?>> getAllowedFilterAttributes() {
         return ALLOWED_FILTER_ATTRIBUTES;
     }
 

@@ -19,10 +19,10 @@ public class ValidationUtil {
      *
      * @param pageable                the {@link PageWithFilterRequest} object to validate.
      * @param allowedSortAttributes   a {@link Set} of attribute names that are permitted for sorting.
-     * @param allowedFilterAttributes a {@link Set} of attribute names that are permitted for filtering.
+     * @param allowedFilterAttributes a {@link Map} of permitted for filters. Key is attribute name and Value is its type (e.g. String.class, Boolean.class).
      * @throws GenericValidationError if an invalid sort or filter attribute or sort direction is detected.
      */
-    public static void forceValidPageable(PageWithFilterRequest pageable, Set<String> allowedSortAttributes, Set<String> allowedFilterAttributes) throws GenericValidationError {
+    public static void forceValidPageable(PageWithFilterRequest pageable, Set<String> allowedSortAttributes, Map<String, Class<?>> allowedFilterAttributes) throws GenericValidationError {
         forceValidPageable(pageable, allowedSortAttributes);
         forceValidFilter(pageable.getFilters(), allowedFilterAttributes);
     }
@@ -60,7 +60,7 @@ public class ValidationUtil {
 
         for (Sort.Order order : sort.stream().toList()) {
             if (!allowedSortAttributes.contains(order.getProperty())) {
-                throw new GenericValidationError("Not allowed attribute for sorting: " + order.getProperty());
+                throw new GenericValidationError("Invalid sort attribute: " + order.getProperty());
             }
 
             if (!order.isAscending() && !order.isDescending()) {
@@ -69,15 +69,17 @@ public class ValidationUtil {
         }
     }
 
-    public static void forceValidFilter(Map<String, String> filters, Set<String> allowedFilterAttributes) {
+    public static void forceValidFilter(Map<String, Map<String, Class<?>>> filters, Map<String, Class<?>> allowedFilterAttributes) {
         if (filters.isEmpty()) {
             return;
         }
 
         for (String filterKey : filters.keySet()) {
-            if (!allowedFilterAttributes.contains(filterKey)) {
+            if (!allowedFilterAttributes.containsKey(filterKey)) {
                 throw new GenericValidationError("Invalid filter attribute: " + filterKey);
             }
+
+            // TODO: add filter type validation e.g. DateTime "eventDateTime>=2025-02-07", eventDateTimeBetween...
         }
     }
 }

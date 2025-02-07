@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,29 +33,44 @@ public class DataUtil {
                 .collect(Collectors.joining(", ")));
     }
 
-    /// All passed filters assumed to be VARCHAR and therefore filtered with LIKE operator.
-    /// You should modify base query for your custom filter accordingly, before passing it to here.
-    public static List<String> appendWhereClause(StringBuilder queryBuilder, Map<String, String> filters) {
-        List<String> filterValues = new ArrayList<>();
+    public static List<Object> appendWhereClause(StringBuilder queryBuilder, Map<String, Map<String, Class<?>>> filters) {
+        List<Object> queryParams = new ArrayList<>();
         if (filters.isEmpty()) {
-            return filterValues;
+            return queryParams;
         }
 
-        boolean hasWhereClause = queryBuilder.toString().toLowerCase().contains(" where ");
-        if (!hasWhereClause) {
-            queryBuilder.append(" WHERE ");
-        } else {
-            queryBuilder.append(" AND ");
+        boolean hasWhereClause = queryBuilder.toString().toUpperCase().contains(" WHERE ");
+        queryBuilder.append(hasWhereClause ? " AND " : " WHERE ");
+
+        List<String> conditions = new ArrayList<>();
+        for (String attribute : filters.keySet()) {
+            String value = filters.get(attribute).keySet().iterator().next();
+            Class<?> attributeType = filters.get(attribute).values().iterator().next();
+
+            attribute = convertToSnakeCase(attribute);
+            if (attributeType == String.class) {
+                queryParams.add("%" + value + "%");
+                conditions.add(attribute + " LIKE ?");
+            } else if (value.equalsIgnoreCase("NULL")) {
+                conditions.add(attribute + " IS NULL");
+            } else if (attributeType == Boolean.class) {
+                queryParams.add(Boolean.parseBoolean(value));
+                conditions.add(attribute + " = ?");
+            } else if (Number.class.isAssignableFrom(attributeType)) {
+                try {
+                    Number number = NumberFormat.getInstance().parse(value);
+                    queryParams.add(number);
+                    conditions.add(attribute + "=" + "?");
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException("Invalid numeric value: " + value, e);
+                }
+            } else {
+                throw new IllegalArgumentException("Unsupported filter type: " + attributeType.getSimpleName());
+            }
         }
+        queryBuilder.append(String.join(" AND ", conditions));
 
-        queryBuilder.append(filters.entrySet().stream()
-                .map(entry -> {
-                    filterValues.add("%" + entry.getValue() + "%"); // Add the filter value as a parameter
-                    return convertToSnakeCase(entry.getKey()) + " LIKE ?";
-                })
-                .collect(Collectors.joining(" AND ")));
-
-        return filterValues;
+        return queryParams;
     }
 
     public static String convertToSnakeCase(String camelCase) {

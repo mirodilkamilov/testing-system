@@ -25,7 +25,7 @@ public class GenericRepositoryWithPaginationImpl<T> implements GenericRepository
     @Override
     public List<T> findAndSortModelWithPagination(PageWithFilterRequest pageable, StringBuilder queryBuilder, RowMapper<T> rowMapper) {
         // Add filters dynamically
-        Map<String, String> filters = pageable.getFilters();
+        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );
@@ -50,7 +50,7 @@ public class GenericRepositoryWithPaginationImpl<T> implements GenericRepository
     @Override
     public long countFilteredModel(PageWithFilterRequest pageable, StringBuilder queryBuilder) {
         // Add filters dynamically
-        Map<String, String> filters = pageable.getFilters();
+        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );

@@ -11,18 +11,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 @Table("users")
 public class User implements UserDetails {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
             "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
     );
-    private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
-            "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
+    private static final Map<String, Class<?>> ALLOWED_FILTER_ATTRIBUTES = Map.of(
+            "userId", String.class,
+            "email", String.class,
+            "userRole", String.class,
+            "fname", String.class,
+            "lname", String.class,
+            "status", String.class,
+            "createdAt", String.class
     );
 
     @Id
@@ -82,7 +85,7 @@ public class User implements UserDetails {
         return ALLOWED_SORT_ATTRIBUTES;
     }
 
-    public static Set<String> getAllowedFilterAttributes() {
+    public static Map<String, Class<?>> getAllowedFilterAttributes() {
         return ALLOWED_FILTER_ATTRIBUTES;
     }
 
