@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +18,7 @@ public class TestEvent {
             "email", "fname", "lname", "title"
     );
     private static final Map<String, Class<?>> ALLOWED_FILTER_ATTRIBUTES = Map.of(
+//            "eventDatetime", Instant.class,
             "testEventStatus", String.class,
             "isPassed", Boolean.class,
             "email", String.class,
@@ -32,14 +33,14 @@ public class TestEvent {
     private Long testTakerId;
     private Long testId;
     @Column("event_datetime")
-    private Date eventDateTime;
+    private Instant eventDateTime;
     private TestEventStatus status;
     private Float scorePoints = null;
     private Integer scorePercentage = null;
     private Boolean isPassed = null;
-    private Date startedAt;
-    private Date finishedAt;
-    private Date createdAt;
+    private Instant startedAt;
+    private Instant finishedAt;
+    private Instant createdAt;
     private List<TestAttempt> testAttempt;
     @Transient
     private User testTaker;
@@ -49,14 +50,14 @@ public class TestEvent {
     public TestEvent() {
     }
 
-    public TestEvent(Long testTakerId, Long testId, Date eventDateTime, TestEventStatus status) {
+    public TestEvent(Long testTakerId, Long testId, Instant eventDateTime, TestEventStatus status) {
         this.testTakerId = testTakerId;
         this.testId = testId;
         this.eventDateTime = eventDateTime;
         this.status = status;
     }
 
-    public TestEvent(Long id, Long testTakerId, Long testId, Date eventDateTime, TestEventStatus status, Float scorePoints, Integer scorePercentage, Boolean isPassed, Date startedAt, Date finishedAt, Date createdAt) {
+    public TestEvent(Long id, Long testTakerId, Long testId, Instant eventDateTime, TestEventStatus status, Float scorePoints, Integer scorePercentage, Boolean isPassed, Instant startedAt, Instant finishedAt, Instant createdAt) {
         this(testTakerId, testId, eventDateTime, status);
         this.id = id;
         this.scorePoints = scorePoints;
@@ -87,7 +88,7 @@ public class TestEvent {
         return testId;
     }
 
-    public Date getEventDateTime() {
+    public Instant getEventDateTime() {
         return eventDateTime;
     }
 
@@ -123,23 +124,23 @@ public class TestEvent {
         this.isPassed = isPassed;
     }
 
-    public Date getStartedAt() {
+    public Instant getStartedAt() {
         return startedAt;
     }
 
-    public void setStartedAt(Date startedAt) {
+    public void setStartedAt(Instant startedAt) {
         this.startedAt = startedAt;
     }
 
-    public Date getFinishedAt() {
+    public Instant getFinishedAt() {
         return finishedAt;
     }
 
-    public void setFinishedAt(Date finishedAt) {
+    public void setFinishedAt(Instant finishedAt) {
         this.finishedAt = finishedAt;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 

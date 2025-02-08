@@ -3,7 +3,7 @@ package dev.mirodil.testing_system.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dev.mirodil.testing_system.models.Test;
 
-import java.util.Date;
+import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record TestResponseDTO(
@@ -15,7 +15,7 @@ public record TestResponseDTO(
         int passingPercentage,
         Boolean shouldShuffle,
         Boolean shouldRandomlyPick,
-        Date deletedAt
+        Instant deletedAt
 ) {
     public TestResponseDTO(Test test) {
         this(

@@ -11,7 +11,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 @Table("users")
 public class User implements UserDetails {
@@ -37,7 +42,7 @@ public class User implements UserDetails {
     private String lname;
     private UserGender gender;
     private UserStatus status;
-    private Date createdAt;
+    private Instant createdAt;
 
     @Transient
     private Role role;
@@ -60,7 +65,7 @@ public class User implements UserDetails {
     /**
      * User Constructor for detailed reading
      */
-    public User(Long id, String email, String password, Long roleId, String fname, String lname, UserGender gender, UserStatus status, Date createdAt) {
+    public User(Long id, String email, String password, Long roleId, String fname, String lname, UserGender gender, UserStatus status, Instant createdAt) {
         this(email, password, roleId, fname, lname, gender);
         this.id = id;
         this.status = status;
@@ -78,7 +83,7 @@ public class User implements UserDetails {
         this.lname = lname;
         this.gender = gender;
         this.status = UserStatus.ACTIVE;
-        this.createdAt = new Date();
+        this.createdAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public static Set<String> getAllowedSortAttributes() {
@@ -170,11 +175,11 @@ public class User implements UserDetails {
         this.status = status;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 

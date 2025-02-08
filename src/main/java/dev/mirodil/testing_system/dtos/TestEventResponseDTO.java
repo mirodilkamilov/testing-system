@@ -5,7 +5,7 @@ import dev.mirodil.testing_system.models.TestEvent;
 import dev.mirodil.testing_system.models.enums.TestEventStatus;
 
 import java.net.URI;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -14,14 +14,14 @@ public record TestEventResponseDTO(
         Long testEventId,
         UserResponseDTO testTaker,
         TestResponseDTO test,
-        Date eventDatetime,
+        Instant eventDatetime,
         TestEventStatus status,
         Float scorePoints,
         Integer scorePercentage,
         Boolean isPassed,
-        Date startedAt,
-        Date finishedAt,
-        Date createdAt,
+        Instant startedAt,
+        Instant finishedAt,
+        Instant createdAt,
         // TODO: create separate TestAttemptDTO (with detailed questions and their options)
         URI path
 ) {

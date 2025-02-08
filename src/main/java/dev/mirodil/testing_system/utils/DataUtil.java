@@ -10,11 +10,13 @@ import org.springframework.data.domain.Sort;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DataUtil {
@@ -90,7 +92,9 @@ public class DataUtil {
                 rs.getString("lname"),
                 UserGender.valueOf(rs.getString("gender")),
                 UserStatus.valueOf(rs.getString("status")),
-                rs.getTimestamp("created_at")
+                Optional.ofNullable(rs.getTimestamp("created_at"))
+                        .map(Timestamp::toInstant)
+                        .orElse(null)
         );
         Role role = extractRoleFromResultSet(rs);
         user.setUserRole(role);
@@ -118,14 +122,22 @@ public class DataUtil {
                 rs.getLong("test_event_id"),
                 rs.getLong("test_taker_id"),
                 rs.getLong("test_id"),
-                rs.getTimestamp("event_datetime"),
+                Optional.ofNullable(rs.getTimestamp("event_datetime"))
+                        .map(Timestamp::toInstant)
+                        .orElse(null),
                 TestEventStatus.valueOf(rs.getString("test_event_status")),
                 (Float) rs.getObject("score_points"),
                 (Integer) rs.getObject("score_percentage"),
                 (Boolean) rs.getObject("is_passed"),
-                rs.getTimestamp("started_at"),
-                rs.getTimestamp("finished_at"),
-                rs.getTimestamp("test_event_created_at")
+                Optional.ofNullable(rs.getTimestamp("started_at"))
+                        .map(Timestamp::toInstant)
+                        .orElse(null),
+                Optional.ofNullable(rs.getTimestamp("finished_at"))
+                        .map(Timestamp::toInstant)
+                        .orElse(null),
+                Optional.ofNullable(rs.getTimestamp("test_event_created_at"))
+                        .map(Timestamp::toInstant)
+                        .orElse(null)
         );
         if (hasColumn(rs, "test_attempt")) {
             List<TestAttempt> testAttempt = extractTestAttemptFromResultSet(rs);
@@ -164,7 +176,9 @@ public class DataUtil {
         if (hasColumns(rs, otherUserColumns)) {
             testTaker.setGender(UserGender.valueOf(rs.getString("gender")));
             testTaker.setUserStatus(UserStatus.valueOf(rs.getString("user_status")));
-            testTaker.setCreatedAt(rs.getTimestamp("user_created_at"));
+            testTaker.setCreatedAt(Optional.ofNullable(rs.getTimestamp("user_created_at"))
+                    .map(Timestamp::toInstant)
+                    .orElse(null));
         }
         if (isColumnSet(rs, "role_name")) {
             testTaker.setUserRole(extractRoleFromResultSet(rs));
@@ -183,7 +197,11 @@ public class DataUtil {
                 rs.getInt("passing_percentage"),
                 hasColumn(rs, "should_shuffle") ? rs.getBoolean("should_shuffle") : null,
                 hasColumn(rs, "should_randomly_pick") ? rs.getBoolean("should_randomly_pick") : null,
-                hasColumn(rs, "deleted_at") ? rs.getTimestamp("deleted_at") : null
+                hasColumn(rs, "deleted_at") ?
+                        Optional.ofNullable(rs.getTimestamp("deleted_at"))
+                                .map(Timestamp::toInstant)
+                                .orElse(null)
+                        : null
         );
     }
 

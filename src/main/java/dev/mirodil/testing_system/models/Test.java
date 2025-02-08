@@ -3,7 +3,7 @@ package dev.mirodil.testing_system.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Table("tests")
 public class Test {
@@ -16,7 +16,7 @@ public class Test {
     private int passingPercentage;
     private Boolean shouldShuffle;
     private Boolean shouldRandomlyPick;
-    private Date deleted_at;
+    private Instant deleted_at;
 
     public Test() {
     }
@@ -35,7 +35,7 @@ public class Test {
     /**
      * Test Constructor for detailed reading
      */
-    public Test(Long id, String title, String description, int duration, int noOfQuestions, int passingPercentage, Boolean shouldShuffle, Boolean shouldRandomlyPick, Date deleted_at) {
+    public Test(Long id, String title, String description, int duration, int noOfQuestions, int passingPercentage, Boolean shouldShuffle, Boolean shouldRandomlyPick, Instant deleted_at) {
         this(
                 title,
                 description,
@@ -106,11 +106,11 @@ public class Test {
         this.shouldRandomlyPick = shouldRandomlyPick;
     }
 
-    public Date getDeletedAt() {
+    public Instant getDeletedAt() {
         return deleted_at;
     }
 
-    public void setDeletedAt(Date deleted_at) {
+    public void setDeletedAt(Instant deleted_at) {
         this.deleted_at = deleted_at;
     }
 }
