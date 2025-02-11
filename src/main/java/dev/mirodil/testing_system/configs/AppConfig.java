@@ -1,6 +1,7 @@
 package dev.mirodil.testing_system.configs;
 
 import dev.mirodil.testing_system.models.TestEvent;
+import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.repositories.GenericRowMapper;
 import dev.mirodil.testing_system.repositories.RoleWithPermissionResultSetExtractor;
 import dev.mirodil.testing_system.repositories.UserWithPermissionResultSetExtractor;
@@ -49,6 +50,11 @@ public class AppConfig {
     @Bean
     public RoleWithPermissionResultSetExtractor roleWithPermissionResultSetExtractor() {
         return new RoleWithPermissionResultSetExtractor();
+    }
+
+    @Bean
+    public RowMapper<User> userRowMapper() {
+        return new GenericRowMapper<>(DataUtil::extractUserFromResultSet);
     }
 
     @Bean
