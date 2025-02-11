@@ -5,18 +5,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extends {@link PageRequest} to support dynamic filtering.
  * <p>
- * Filters are stored as a nested map:
- * {@code Map<attribute, Map<value, valueType>>}, e.g.:
+ * Filters are stored as a List of {@link FilterCriteria}
+ * <p>
+ * {@code List<FilterCriteria<>(key, List<operators>, List<values>)>}
+ * <p>
+ * Example query: {@code ?scorePercentage>=70&scorePercentage<=90&isPassed=true,false}
  * <pre>
- *     { "isPassed": { "true": Boolean.class }, "title": { "Test": String.class } }
+ * [
+ *   new FilterCriteria<>("scorePercentage", List.of(">=", "<="), List.of(70, 90)), // Integer values
+ *   new FilterCriteria<>("isPassed", List.of("="), List.of(true, false)) // Boolean values
+ * ]
  * </pre>
- * Example query parameters: {@code ?title=Test&isPassed=true&sort=eventDateTime,desc&sort=id}.
  * Internally, {@link PageableWithFilterResolver} converts them to the correct types.
  *
  * @see PageableWithFilterResolver
@@ -25,17 +30,17 @@ import java.util.Map;
 @Schema(description = "Custom pageable request with filters")
 public class PageWithFilterRequest extends PageRequest {
     /**
-     * Filter criteria in the form of {@code Map<attribute, Map<value, valueType>>}.
+     * Filter criteria in the form of {@code List<FilterCriteria<>(key, List<operators>, List<values>)>}.
      */
-    @Schema(description = "Map of filter criteria. Add as query parameters (e.g., email=john.doe@example.com&userRole=TEST_TAKER).")
-    private final Map<String, Map<String, Class<?>>> filters;
+    @Schema(description = "Map of filter criteria. Add as query parameters (e.g., ?scorePercentage>=70&scorePercentage<=90&isPassed=true,false).")
+    private final List<FilterCriteria<?>> filters;
 
-    public PageWithFilterRequest(int pageNumber, int pageSize, Sort sort, Map<String, Map<String, Class<?>>> filters) {
+    public PageWithFilterRequest(int pageNumber, int pageSize, Sort sort, List<FilterCriteria<?>> filters) {
         super(pageNumber, pageSize, sort);
-        this.filters = filters != null ? filters : new HashMap<>();
+        this.filters = filters != null ? filters : new ArrayList<>();
     }
 
-    public Map<String, Map<String, Class<?>>> getFilters() {
+    public List<FilterCriteria<?>> getFilters() {
         return filters;
     }
 }

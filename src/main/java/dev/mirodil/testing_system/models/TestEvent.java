@@ -14,19 +14,19 @@ import java.util.Set;
 @Table("test_events")
 public class TestEvent {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
-            "testEventId", "testTakerId", "testId", "eventDatetime", "testEventStatus", "isPassed", "testEventCreatedAt",
+            "testEventId", "testTakerId", "testId", "eventDatetime", "testEventStatus", "scorePercentage", "testEventCreatedAt",
             "email", "fname", "lname", "title"
     );
     private static final Map<String, Class<?>> ALLOWED_FILTER_ATTRIBUTES = Map.of(
-//            "eventDatetime", Instant.class,
+            "eventDatetime", Instant.class,
             "testEventStatus", String.class,
+            "scorePercentage", Integer.class,
             "isPassed", Boolean.class,
             "email", String.class,
             "fname", String.class,
             "lname", String.class,
             "title", String.class
     );
-    // TODO: add custom eventBetweenDatetime, enums - testEventStatus (re-think) filter
 
     @Id
     private Long id;

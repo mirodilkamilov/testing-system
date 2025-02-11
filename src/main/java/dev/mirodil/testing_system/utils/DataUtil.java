@@ -11,11 +11,12 @@ import org.springframework.data.domain.Sort;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class DataUtil {
                 .collect(Collectors.joining(", ")));
     }
 
-    public static List<Object> appendWhereClause(StringBuilder queryBuilder, Map<String, Map<String, Class<?>>> filters) {
+    public static List<Object> appendWhereClause(StringBuilder queryBuilder, List<FilterCriteria<?>> filters) {
         List<Object> queryParams = new ArrayList<>();
         if (filters.isEmpty()) {
             return queryParams;
@@ -45,29 +46,51 @@ public class DataUtil {
         queryBuilder.append(hasWhereClause ? " AND " : " WHERE ");
 
         List<String> conditions = new ArrayList<>();
-        for (String attribute : filters.keySet()) {
-            String value = filters.get(attribute).keySet().iterator().next();
-            Class<?> attributeType = filters.get(attribute).values().iterator().next();
+        for (FilterCriteria<?> filterCriteria : filters) {
+            List<String> operators = filterCriteria.operators();
+            List<?> values = filterCriteria.values();
 
-            attribute = convertToSnakeCase(attribute);
-            if (attributeType == String.class) {
-                queryParams.add("%" + value + "%");
-                conditions.add(attribute + " LIKE ?");
-            } else if (value.equalsIgnoreCase("NULL")) {
-                conditions.add(attribute + " IS NULL");
-            } else if (attributeType == Boolean.class) {
-                queryParams.add(Boolean.parseBoolean(value));
-                conditions.add(attribute + " = ?");
-            } else if (Number.class.isAssignableFrom(attributeType)) {
-                try {
-                    Number number = NumberFormat.getInstance().parse(value);
-                    queryParams.add(number);
-                    conditions.add(attribute + "=" + "?");
-                } catch (ParseException e) {
-                    throw new IllegalArgumentException("Invalid numeric value: " + value, e);
+            // Ensure operators and values are aligned correctly
+            boolean isOperatorOnlyEquality = operators.size() == 1 && operators.getFirst().equals("=");
+            if (operators.size() != values.size() && !isOperatorOnlyEquality) { // except if operators list is List.of("=") - ?status=active,inactive
+                throw new IllegalArgumentException("Invalid FilterCriteria: Operators and values must match in size. Received: " + filterCriteria);
+            }
+
+            String attribute = convertToSnakeCase(filterCriteria.attribute());
+            for (int i = 0; i < values.size(); i++) {
+                Object value = values.get(i);
+                String operator = operators.get(i);
+
+                if (isOperatorOnlyEquality && values.size() > 1) {
+                    // Handle multi-value IN clause (e.g., status=active,inactive)
+                    String placeholders = String.join(",", Collections.nCopies(values.size(), "?"));
+                    conditions.add(attribute + " IN (" + placeholders + ")");
+                    queryParams.addAll(values);
+                    break;
+                } else if (value == null) {
+                    conditions.add(attribute + " IS NULL");
+                } else if (value instanceof String) {
+                    queryParams.add("%" + value + "%");
+                    conditions.add(attribute + " LIKE ?");
+                } else if (value instanceof Boolean || value instanceof Number) {
+                    queryParams.add(value);
+                    conditions.add(attribute + " " + operator + " ?");
+                } else if (value instanceof Instant instantValue) {
+                    boolean isDateOnly = instantValue.toString().endsWith("T00:00:00Z");
+                    if (isDateOnly && operator.equals("=")) {
+                        Instant endOfDay = instantValue.plus(1, ChronoUnit.DAYS).minusMillis(1);
+
+                        queryParams.add(Timestamp.valueOf(instantValue.atZone(ZoneOffset.UTC).toLocalDateTime()));
+                        queryParams.add(Timestamp.valueOf(endOfDay.atZone(ZoneOffset.UTC).toLocalDateTime()));
+                        conditions.add(attribute + " BETWEEN ? AND ?");
+                    } else {
+                        // Normal timestamp comparison
+                        queryParams.add(Timestamp.valueOf(instantValue.atZone(ZoneOffset.UTC).toLocalDateTime()));
+                        conditions.add(attribute + " " + operator + " ?");
+                    }
+                } else {
+                    throw new IllegalArgumentException("Unsupported filter type for attribute '" + attribute + "': " + value.getClass().getSimpleName());
                 }
-            } else {
-                throw new IllegalArgumentException("Unsupported filter type: " + attributeType.getSimpleName());
             }
         }
         queryBuilder.append(String.join(" AND ", conditions));

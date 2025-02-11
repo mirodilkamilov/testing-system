@@ -1,6 +1,7 @@
 package dev.mirodil.testing_system.repositories;
 
 import dev.mirodil.testing_system.models.User;
+import dev.mirodil.testing_system.utils.FilterCriteria;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static dev.mirodil.testing_system.utils.DataUtil.appendOrderByClause;
 import static dev.mirodil.testing_system.utils.DataUtil.appendWhereClause;
@@ -33,7 +33,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         );
 
         // Add filters dynamically
-        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
+        List<FilterCriteria<?>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );
@@ -60,7 +60,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         StringBuilder queryBuilder = new StringBuilder("SELECT count(*) FROM users");
 
         // Add filters dynamically
-        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
+        List<FilterCriteria<?>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );

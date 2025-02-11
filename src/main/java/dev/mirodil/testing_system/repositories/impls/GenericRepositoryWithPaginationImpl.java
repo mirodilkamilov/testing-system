@@ -1,6 +1,7 @@
 package dev.mirodil.testing_system.repositories.impls;
 
 import dev.mirodil.testing_system.repositories.GenericRepositoryWithPagination;
+import dev.mirodil.testing_system.utils.FilterCriteria;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static dev.mirodil.testing_system.utils.DataUtil.appendOrderByClause;
 import static dev.mirodil.testing_system.utils.DataUtil.appendWhereClause;
@@ -25,7 +25,7 @@ public class GenericRepositoryWithPaginationImpl<T> implements GenericRepository
     @Override
     public List<T> findAndSortModelWithPagination(PageWithFilterRequest pageable, StringBuilder queryBuilder, RowMapper<T> rowMapper) {
         // Add filters dynamically
-        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
+        List<FilterCriteria<?>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );
@@ -50,7 +50,7 @@ public class GenericRepositoryWithPaginationImpl<T> implements GenericRepository
     @Override
     public long countFilteredModel(PageWithFilterRequest pageable, StringBuilder queryBuilder) {
         // Add filters dynamically
-        Map<String, Map<String, Class<?>>> filters = pageable.getFilters();
+        List<FilterCriteria<?>> filters = pageable.getFilters();
         List<Object> queryParams = new ArrayList<>(
                 appendWhereClause(queryBuilder, filters)
         );
