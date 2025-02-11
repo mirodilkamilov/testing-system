@@ -11,9 +11,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 @Table("users")
@@ -21,8 +23,14 @@ public class User implements UserDetails {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
             "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
     );
-    private static final Set<String> ALLOWED_FILTER_ATTRIBUTES = Set.of(
-            "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
+    private static final Map<String, Class<?>> ALLOWED_FILTER_ATTRIBUTES = Map.of(
+            "userId", String.class,
+            "email", String.class,
+            "userRole", String.class,
+            "fname", String.class,
+            "lname", String.class,
+            "status", String.class,
+            "createdAt", String.class
     );
 
     @Id
@@ -34,7 +42,7 @@ public class User implements UserDetails {
     private String lname;
     private UserGender gender;
     private UserStatus status;
-    private Date createdAt;
+    private Instant createdAt;
 
     @Transient
     private Role role;
@@ -44,6 +52,29 @@ public class User implements UserDetails {
     public User() {
     }
 
+    /**
+     * User Constructor for shallow reading
+     */
+    public User(Long id, String email, String fname, String lname) {
+        this.id = id;
+        this.email = email;
+        this.fname = fname;
+        this.lname = lname;
+    }
+
+    /**
+     * User Constructor for detailed reading
+     */
+    public User(Long id, String email, String password, Long roleId, String fname, String lname, UserGender gender, UserStatus status, Instant createdAt) {
+        this(email, password, roleId, fname, lname, gender);
+        this.id = id;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * User constructor only for creating a new user (with default values to userStatus & createdAt)
+     */
     public User(String email, String password, Long roleId, String fname, String lname, UserGender gender) {
         this.email = email;
         this.password = password;
@@ -52,14 +83,14 @@ public class User implements UserDetails {
         this.lname = lname;
         this.gender = gender;
         this.status = UserStatus.ACTIVE;
-        createdAt = new Date();
+        this.createdAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public static Set<String> getAllowedSortAttributes() {
         return ALLOWED_SORT_ATTRIBUTES;
     }
 
-    public static Set<String> getAllowedFilterAttributes() {
+    public static Map<String, Class<?>> getAllowedFilterAttributes() {
         return ALLOWED_FILTER_ATTRIBUTES;
     }
 
@@ -93,11 +124,19 @@ public class User implements UserDetails {
     }
 
     public UserRole getUserRoleName() {
+        if (role == null) {
+            return null;
+        }
+
         return role.getName();
     }
 
     public Long getRoleId() {
         return roleId;
+    }
+
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
     }
 
     public boolean isAdmin() {
@@ -124,6 +163,10 @@ public class User implements UserDetails {
         return gender;
     }
 
+    public void setGender(UserGender gender) {
+        this.gender = gender;
+    }
+
     public UserStatus getStatus() {
         return status;
     }
@@ -132,11 +175,11 @@ public class User implements UserDetails {
         this.status = status;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 

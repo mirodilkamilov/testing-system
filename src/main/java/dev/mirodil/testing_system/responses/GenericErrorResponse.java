@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +34,9 @@ public class GenericErrorResponse {
 
     public static Map<String, Object> getErrorDetailsMap(String message, HttpStatus statusCode, URI path) {
         Map<String, Object> errorDetails = new HashMap<>();
-        errorDetails.put("timestamp", Instant.now().toString());
+        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+
+        errorDetails.put("timestamp", timestamp);
         errorDetails.put("status", statusCode.value());
         errorDetails.put("error", statusCode.getReasonPhrase());
         errorDetails.put("message", message);

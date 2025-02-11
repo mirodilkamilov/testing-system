@@ -1,11 +1,16 @@
 package dev.mirodil.testing_system.configs;
 
+import dev.mirodil.testing_system.models.TestEvent;
+import dev.mirodil.testing_system.models.User;
+import dev.mirodil.testing_system.repositories.GenericRowMapper;
 import dev.mirodil.testing_system.repositories.RoleWithPermissionResultSetExtractor;
 import dev.mirodil.testing_system.repositories.UserWithPermissionResultSetExtractor;
+import dev.mirodil.testing_system.utils.DataUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,5 +50,15 @@ public class AppConfig {
     @Bean
     public RoleWithPermissionResultSetExtractor roleWithPermissionResultSetExtractor() {
         return new RoleWithPermissionResultSetExtractor();
+    }
+
+    @Bean
+    public RowMapper<User> userRowMapper() {
+        return new GenericRowMapper<>(DataUtil::extractUserFromResultSet);
+    }
+
+    @Bean
+    public RowMapper<TestEvent> testEventRowMapper() {
+        return new GenericRowMapper<>(DataUtil::extractTestEventFromResultSet);
     }
 }

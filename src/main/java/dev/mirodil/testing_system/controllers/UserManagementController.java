@@ -2,10 +2,9 @@ package dev.mirodil.testing_system.controllers;
 
 import dev.mirodil.testing_system.dtos.UserCreateRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
-import dev.mirodil.testing_system.models.User;
 import dev.mirodil.testing_system.services.UserService;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
-import dev.mirodil.testing_system.utils.ValidationUtil;
+import dev.mirodil.testing_system.validations.ValidUserPageRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -37,13 +36,8 @@ public class UserManagementController {
     @Operation(summary = "Get all users",
             description = "Retrieve a paginated list of users with optional sorting and filters (cannot add field in swagger-ui \uD83D\uDE05. So, recommend using my Postman collection).\n\nExample usage: users?page=0&size=7&sort=userId&email=info")
     public Page<UserResponseDTO> getAllUsers(
-            @Parameter(hidden = true) PageWithFilterRequest pageable
+            @Parameter(hidden = true) @ValidUserPageRequest PageWithFilterRequest pageable
     ) {
-        ValidationUtil.forceValidPageable(
-                pageable,
-                User.getAllowedSortAttributes(),
-                User.getAllowedFilterAttributes()
-        );
         return userService.getUsers(pageable);
     }
 
@@ -63,9 +57,3 @@ public class UserManagementController {
         );
     }
 }
-
-/*
- TODO:
- 3. Tests model
- 4. TestEvents model
- */

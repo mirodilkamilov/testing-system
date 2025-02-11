@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.net.URI;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AuthUtil {
-    public static final long ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
+    private static final long ONE_DAY_IN_SECONDS = 24 * 60 * 60;
     private static final String secretKeyPlain = System.getenv("SECRET_KEY");
     private static final SecretKey key = Keys.hmacShaKeyFor(secretKeyPlain.getBytes());
     private static PasswordEncoder passwordEncoder;
@@ -46,8 +47,8 @@ public class AuthUtil {
         redisTemplate.opsForValue().set(
                 token,
                 "blackListed",
-                ONE_DAY_IN_MILLIS,
-                TimeUnit.MILLISECONDS
+                ONE_DAY_IN_SECONDS,
+                TimeUnit.SECONDS
         );
     }
 
@@ -117,42 +118,42 @@ public class AuthUtil {
 
     public static boolean isTokenExpired(String token) {
         Claims claims = getClaims(token);
-        return claims.getExpiration().before(new Date());
+        return claims.getExpiration().toInstant().isBefore(Instant.now());
     }
 
     public static Map<String, Object> generateTokenDetails(String subject) {
         String jwtToken = generateToken(subject);
-        Date expiresAt = getTokenExpiresAt(jwtToken);
+        Instant expiresAt = getTokenExpiresAt(jwtToken);
 
         return Map.of(
                 "access", jwtToken,
-                "issuedAt", new Date(System.currentTimeMillis()),
+                "issuedAt", Instant.now(),
                 "expiresAt", expiresAt,
                 "type", "Bearer"
         );
     }
 
-    public static Date getTokenExpiresAt(String token) {
+    public static Instant getTokenExpiresAt(String token) {
         Claims claims = getClaims(token);
-        return claims.getExpiration();
+        return claims.getExpiration().toInstant();
     }
 
     public static String generateToken(String subject) {
-        Date iat = new Date(System.currentTimeMillis());
-        Date exp = new Date(iat.getTime() + ONE_DAY_IN_MILLIS);
+        Instant iat = Instant.now();
+        Instant exp = iat.plusSeconds(ONE_DAY_IN_SECONDS);
         return generateToken(subject, exp);
     }
 
-    public static String generateToken(String subject, Date expDate) {
-        Date iat = new Date(System.currentTimeMillis());
-        if (expDate.before(iat)) {
+    public static String generateToken(String subject, Instant exp) {
+        Instant iat = Instant.now();
+        if (exp.isBefore(iat)) {
             throw new IllegalArgumentException("JWT token's expiration date cannot be before it's issued date");
         }
         return Jwts
                 .builder()
                 .subject(subject)
-                .issuedAt(iat)
-                .expiration(expDate)
+                .issuedAt(Date.from(iat))
+                .expiration(Date.from(exp))
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }

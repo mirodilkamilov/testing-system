@@ -24,8 +24,7 @@ public class UserWithPermissionResultSetExtractor implements ResultSetExtractor<
                 user = DataUtil.extractUserFromResultSet(rs);
             }
 
-            String fieldString = rs.getString("permission_names");
-            if (!"{NULL}".equals(fieldString)) {
+            if (DataUtil.isColumnSet(rs, "permission_names")) {
                 Array permissionNamesArray = rs.getArray("permission_names");
                 String[] permissionNamesString = (String[]) permissionNamesArray.getArray();
                 for (String permissionName : permissionNamesString) {

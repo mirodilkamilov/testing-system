@@ -11,7 +11,7 @@ import dev.mirodil.testing_system.models.enums.UserStatus;
 import dev.mirodil.testing_system.utils.AuthUtil;
 
 import java.net.URI;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -27,7 +27,7 @@ public record UserResponseDTO(
         String fname,
         String lname,
         Boolean isAccountNonLocked,
-        Date createdAt,
+        Instant createdAt,
         URI path,
         Set<PermissionType> permissions
 ) {

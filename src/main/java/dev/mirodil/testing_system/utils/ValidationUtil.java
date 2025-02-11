@@ -4,6 +4,8 @@ import dev.mirodil.testing_system.exceptions.GenericValidationError;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,15 +16,16 @@ public class ValidationUtil {
      * Validates the sorting and filter parameters of a {@link PageWithFilterRequest} object to ensure that only allowed attributes
      * and valid sort directions (ascending or descending) are used. This method helps prevent SQL injection
      * attacks by restricting sorting and filter attributes to a predefined set of allowed values.
-     * <p>Malicious input example:
-     * {@code /api/users?size=7&sort=id,desc&sort=fname;DROP TABLE users; --}</p>
+     * <p>
+     * Malicious input example:
+     * {@code ?size=7&sort=id,desc&sort=fname;DROP TABLE users; --}
      *
      * @param pageable                the {@link PageWithFilterRequest} object to validate.
      * @param allowedSortAttributes   a {@link Set} of attribute names that are permitted for sorting.
-     * @param allowedFilterAttributes a {@link Set} of attribute names that are permitted for filtering.
+     * @param allowedFilterAttributes a {@link Map} of permitted attributes and their value types for filtering. {@code Map.of("isPassed", Boolean.class)}.
      * @throws GenericValidationError if an invalid sort or filter attribute or sort direction is detected.
      */
-    public static void forceValidPageable(PageWithFilterRequest pageable, Set<String> allowedSortAttributes, Set<String> allowedFilterAttributes) throws GenericValidationError {
+    public static void forceValidPageable(PageWithFilterRequest pageable, Set<String> allowedSortAttributes, Map<String, Class<?>> allowedFilterAttributes) throws GenericValidationError {
         forceValidPageable(pageable, allowedSortAttributes);
         forceValidFilter(pageable.getFilters(), allowedFilterAttributes);
     }
@@ -31,8 +34,9 @@ public class ValidationUtil {
      * Validates the sorting parameters of a {@link Pageable} object to ensure that only allowed attributes
      * and valid sort directions (ascending or descending) are used. This method helps prevent SQL injection
      * attacks by restricting sorting attributes to a predefined set of allowed values.
-     * <p>Malicious input example:
-     * {@code /api/users?size=7&sort=id,desc&sort=fname;DROP TABLE users; --}</p>
+     * <p>
+     * Malicious input example:
+     * {@code ?size=7&sort=id,desc&sort=fname;DROP TABLE users; --}
      *
      * @param pageable              the {@link Pageable} object to validate.
      * @param allowedSortAttributes a {@link Set} of attribute names that are permitted for sorting.
@@ -60,7 +64,7 @@ public class ValidationUtil {
 
         for (Sort.Order order : sort.stream().toList()) {
             if (!allowedSortAttributes.contains(order.getProperty())) {
-                throw new GenericValidationError("Not allowed attribute for sorting: " + order.getProperty());
+                throw new GenericValidationError("Invalid sort attribute: " + order.getProperty());
             }
 
             if (!order.isAscending() && !order.isDescending()) {
@@ -69,15 +73,42 @@ public class ValidationUtil {
         }
     }
 
-    public static void forceValidFilter(Map<String, String> filters, Set<String> allowedFilterAttributes) {
+    public static void forceValidFilter(List<FilterCriteria<?>> filters, Map<String, Class<?>> allowedFilterAttributes) {
         if (filters.isEmpty()) {
             return;
         }
 
-        for (String filterKey : filters.keySet()) {
-            if (!allowedFilterAttributes.contains(filterKey)) {
-                throw new GenericValidationError("Invalid filter attribute: " + filterKey);
+        for (FilterCriteria<?> filter : filters) {
+            String attribute = filter.attribute();
+            List<String> operators = filter.operators();
+
+            if (!allowedFilterAttributes.containsKey(attribute)) {
+                throw new GenericValidationError("Invalid filter attribute: '" + attribute + "'. Allowed attributes: " + allowedFilterAttributes.keySet());
             }
+
+            Class<?> type = allowedFilterAttributes.get(attribute);
+            Set<String> validOperators = getAllowedOperatorsForType(type);
+            for (String operator : operators) {
+                if (!validOperators.contains(operator)) {
+                    throw new GenericValidationError("Invalid operator '" + operator + "' for filter '" + attribute + "'. " +
+                            "Allowed operators: " + validOperators);
+                }
+            }
+        }
+    }
+
+    /**
+     * Determines the allowed operators for a given data type.
+     */
+    private static Set<String> getAllowedOperatorsForType(Class<?> type) {
+        final Set<String> ALL_OPERATORS = Set.of("=", "<", ">", "<=", ">=");
+
+        if (Number.class.isAssignableFrom(type) || type.equals(Instant.class)) {
+            return ALL_OPERATORS;
+        } else if (type.equals(String.class) || type.equals(Boolean.class)) {
+            return Set.of("=");
+        } else {
+            throw new RuntimeException("Unsupported filter type: " + type.getSimpleName());
         }
     }
 }
