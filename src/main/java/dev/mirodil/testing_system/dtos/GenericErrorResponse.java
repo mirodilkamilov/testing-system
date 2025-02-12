@@ -1,4 +1,4 @@
-package dev.mirodil.testing_system.responses;
+package dev.mirodil.testing_system.dtos;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

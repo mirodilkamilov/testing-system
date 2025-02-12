@@ -3,6 +3,7 @@ package dev.mirodil.testing_system.controllers;
 import dev.mirodil.testing_system.dtos.AuthResponseDTO;
 import dev.mirodil.testing_system.dtos.TestTakerRegisterRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
+import dev.mirodil.testing_system.dtos.WrapResponseWithContentKey;
 import dev.mirodil.testing_system.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

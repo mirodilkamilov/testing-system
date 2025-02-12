@@ -1,4 +1,4 @@
-package dev.mirodil.testing_system.controllers;
+package dev.mirodil.testing_system.dtos;
 
 public class WrapResponseWithContentKey<T> {
     private T content;

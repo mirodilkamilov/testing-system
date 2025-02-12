@@ -2,6 +2,7 @@ package dev.mirodil.testing_system.controllers;
 
 import dev.mirodil.testing_system.dtos.AuthResponseDTO;
 import dev.mirodil.testing_system.dtos.UserLoginRequestDTO;
+import dev.mirodil.testing_system.dtos.WrapResponseWithContentKey;
 import dev.mirodil.testing_system.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;

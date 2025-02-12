@@ -1,6 +1,6 @@
 package dev.mirodil.testing_system.exceptions;
 
-import dev.mirodil.testing_system.responses.GenericErrorResponse;
+import dev.mirodil.testing_system.dtos.GenericErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

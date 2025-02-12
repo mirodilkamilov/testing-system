@@ -1,6 +1,6 @@
 package dev.mirodil.testing_system.exceptions;
 
-import dev.mirodil.testing_system.responses.GenericErrorResponse;
+import dev.mirodil.testing_system.dtos.GenericErrorResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,15 +1,18 @@
 package dev.mirodil.testing_system.controllers;
 
+import dev.mirodil.testing_system.dtos.PagedResponse;
 import dev.mirodil.testing_system.dtos.UserCreateRequestDTO;
 import dev.mirodil.testing_system.dtos.UserResponseDTO;
+import dev.mirodil.testing_system.dtos.WrapResponseWithContentKey;
 import dev.mirodil.testing_system.services.UserService;
+import dev.mirodil.testing_system.utils.AppUtil;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import dev.mirodil.testing_system.validations.ValidUserPageRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +38,12 @@ public class UserManagementController {
     @PageableAsQueryParam
     @Operation(summary = "Get all users",
             description = "Retrieve a paginated list of users with optional sorting and filters (cannot add field in swagger-ui \uD83D\uDE05. So, recommend using my Postman collection).\n\nExample usage: users?page=0&size=7&sort=userId&email=info")
-    public Page<UserResponseDTO> getAllUsers(
-            @Parameter(hidden = true) @ValidUserPageRequest PageWithFilterRequest pageable
+    public PagedResponse<UserResponseDTO> getAllUsers(
+            @Parameter(hidden = true) @ValidUserPageRequest PageWithFilterRequest pageable,
+            HttpServletRequest request
     ) {
-        return userService.getUsers(pageable);
+        String fullUrl = AppUtil.getUrlWithQueryParams(request);
+        return userService.getUsers(pageable, fullUrl);
     }
 
     @PreAuthorize("hasAuthority('MANAGE_ALL_USERS')")

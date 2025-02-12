@@ -87,15 +87,16 @@ public class UserService implements UserDetailsService {
         return new UserResponseDTO(user);
     }
 
-    public Page<UserResponseDTO> getUsers(PageWithFilterRequest pageable) {
+    public PagedResponse<UserResponseDTO> getUsers(PageWithFilterRequest pageable, String fullUrl) {
         List<User> users = userRepository.findAndSortUsersWithPagination(pageable);
         long totalElements = userRepository.countFilteredUsers(pageable);
 
         List<UserResponseDTO> usersDTO = users.stream()
                 .map(UserResponseDTO::new)
                 .toList();
+        Page<UserResponseDTO> page = new PageImpl<>(usersDTO, pageable, totalElements);
 
-        return new PageImpl<>(usersDTO, pageable, totalElements);
+        return new PagedResponse<>(page, fullUrl);
     }
 
     @Override

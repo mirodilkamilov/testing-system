@@ -1,10 +1,13 @@
 package dev.mirodil.testing_system.controllers;
 
+import dev.mirodil.testing_system.dtos.PagedResponse;
 import dev.mirodil.testing_system.dtos.TestEventResponseDTO;
+import dev.mirodil.testing_system.dtos.WrapResponseWithContentKey;
 import dev.mirodil.testing_system.services.TestEventService;
+import dev.mirodil.testing_system.utils.AppUtil;
 import dev.mirodil.testing_system.utils.PageWithFilterRequest;
 import dev.mirodil.testing_system.validations.ValidTestEventPageRequest;
-import org.springframework.data.domain.Page;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +23,9 @@ public class TestEventController {
     }
 
     @GetMapping("/test-events")
-    public Page<TestEventResponseDTO> getAllTestEvents(@ValidTestEventPageRequest PageWithFilterRequest pageable) {
-        return testEventService.getTestEvents(pageable);
+    public PagedResponse<TestEventResponseDTO> getAllTestEvents(@ValidTestEventPageRequest PageWithFilterRequest pageable, HttpServletRequest request) {
+        String fullUrl = AppUtil.getUrlWithQueryParams(request);
+        return testEventService.getTestEvents(pageable, fullUrl);
     }
 
     @GetMapping("/test-events/{id}")
