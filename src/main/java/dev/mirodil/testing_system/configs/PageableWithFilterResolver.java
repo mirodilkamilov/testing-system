@@ -65,7 +65,7 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
         Pageable pageable = defaultPageableResolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 
         // Extract raw filters from query parameters
-        Map<String, List<String>> rawFilters = extractFilterParameters(webRequest);
+        Map<String, Map<String, String>> rawFilters = extractFilterParameters(webRequest);
 
         // Determine allowed filters and sorts based on entity annotation
         Map<String, Class<?>> allowedFilters = getEntityAllowedFilters(parameter);
@@ -85,8 +85,8 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
         return pageRequest;
     }
 
-    private Map<String, List<String>> extractFilterParameters(NativeWebRequest webRequest) {
-        Map<String, List<String>> rawFilters = new HashMap<>();
+    Map<String, Map<String, String>> extractFilterParameters(NativeWebRequest webRequest) {
+        Map<String, Map<String, String>> rawFilters = new HashMap<>();
         Iterator<String> iterator = webRequest.getParameterNames();
 
         while (iterator.hasNext()) {
@@ -101,41 +101,42 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
                 continue;
             }
 
-            List<String> operatorValueList = new ArrayList<>();
+            String operator = "=";
+            Map<String, String> operatorValueMap = new HashMap<>();
 
             for (String value : filterValues) {
-                String operator = "=";
                 // Matches operator and value in the key
-                Matcher matcher = Pattern.compile("([<>])(.*)").matcher(key);
+                Matcher matcher = Pattern.compile("([<>])(.*)").matcher(paramName);
                 if (matcher.find()) {
                     operator = matcher.group(1);
-                    // If value is not blank then, original query param must have "=". Otherwise, everything would be in key only
-                    value = value.isBlank() ? matcher.group(2).trim() : "=" + value;
-                    key = key.endsWith(operator) && !value.isBlank()
-                            ? key.substring(0, key.length() - operator.length()).strip() // ?score>=10 -> key: score>, value: 10
-                            : key.substring(0, key.length() - operator.length() - value.length()).strip(); // ?score>10 -> key: score>10, value: ""
+                    // If value is not on the key (in other words value is not blank), then original query param must have "=". Example case: ?score>=10 -> key: score>, value: 10
+                    boolean shouldContainEqualityOperator = !value.isBlank();
+                    value = value.isBlank() ? matcher.group(2).strip() : value;
+                    key = paramName.endsWith(operator) && shouldContainEqualityOperator
+                            ? paramName.substring(0, paramName.length() - operator.length()).strip() // ?score>=10 -> key: score>, value: 10
+                            : paramName.substring(0, paramName.length() - operator.length() - value.length()).strip(); // ?score>10 -> key: score>10, value: ""
+                    if (shouldContainEqualityOperator) {
+                        operator += "=";
+                    }
                 }
 
                 if (value.isBlank()) {
                     continue;
                 }
 
-                String operatorAndValue = operator + value;
-                // If current and previous operators are same, replace value
-                if (!operatorValueList.isEmpty() && operatorValueList.getFirst().startsWith(operator)) {
-                    operatorValueList.clear();
-                    operatorValueList.add(operatorAndValue);
-                    continue;
-                }
+                // If there is duplicate operators, overwrite value (e.g. score>70&score>90 -> score>90)
+                operatorValueMap.put(operator, value.trim());
+            }
 
-                operatorValueList.add(operatorAndValue);
+            if (operatorValueMap.isEmpty()) {
+                continue;
             }
 
             if (rawFilters.containsKey(key)) {
-                rawFilters.get(key).addAll(operatorValueList);
+                rawFilters.get(key).putAll(operatorValueMap);
                 continue;
             }
-            rawFilters.put(key, operatorValueList);
+            rawFilters.put(key, operatorValueMap);
         }
         return rawFilters;
     }
@@ -150,15 +151,15 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
      * @throws IllegalArgumentException If malformed filter value is passed
      * @throws RuntimeException         If filter type is not defined in an entity level
      */
-    private List<FilterCriteria<?>> convertFiltersToTypedList(Map<String, List<String>> rawFilters, Map<String, Class<?>> allowedFilters) {
+    private List<FilterCriteria<?>> convertFiltersToTypedList(Map<String, Map<String, String>> rawFilters, Map<String, Class<?>> allowedFilters) {
         if (rawFilters.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<FilterCriteria<?>> filterCriteriaList = new ArrayList<>();
-        final Pattern operatorValuePattern = Pattern.compile("([<>]=?|=)(.*)");
+        final Pattern supportedOperatorsPattern = Pattern.compile(">=|<=|=|>|<");
 
-        for (Map.Entry<String, List<String>> entry : rawFilters.entrySet()) {
+        for (Map.Entry<String, Map<String, String>> entry : rawFilters.entrySet()) {
             String key = entry.getKey();
 
             if (!allowedFilters.containsKey(key)) {
@@ -173,14 +174,18 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
             List<String> operators = new ArrayList<>();
             List<Object> convertedValues = new ArrayList<>();
 
-            for (String operatorValue : entry.getValue()) {
-                Matcher matcher = operatorValuePattern.matcher(operatorValue);
+            for (Map.Entry<String, String> operatorValue : entry.getValue().entrySet()) {
+                String operator = operatorValue.getKey();
+                String value = operatorValue.getValue();
+                Matcher matcher = supportedOperatorsPattern.matcher(operator);
+
                 if (!matcher.matches()) {
-                    throw new IllegalArgumentException("Malformed filter value for '" + key + "'. Expected format: operator + value (e.g., =true, <=70). Received: " + operatorValue);
+                    throw new GenericValidationError("Filter operator " + operator + " for '" + key + "' is not supported. Supported operators: " + supportedOperatorsPattern.pattern().replace("|", ", "));
                 }
 
-                String operator = matcher.group(1);
-                String value = matcher.group(2).trim();
+                if (value.contains(",") && !operator.equals("=")) {
+                    throw new GenericValidationError("Multivalued filter with the same key is only supported with equality operator (=). You should declare " + key + " separately (e.g. scorePercentage>=70&scorePercentage<90).");
+                }
 
                 // Support multi-value filters (e.g., ?status=active,inactive)
                 if (value.contains(",") && operator.equals("=")) {
