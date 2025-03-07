@@ -111,10 +111,11 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
                     operator = matcher.group(1);
                     // If value is not on the key (in other words value is not blank), then original query param must have "=". Example case: ?score>=10 -> key: score>, value: 10
                     boolean shouldContainEqualityOperator = !value.isBlank();
-                    value = value.isBlank() ? matcher.group(2).strip() : value;
+                    value = value.isBlank() ? matcher.group(2) : value;
                     key = paramName.endsWith(operator) && shouldContainEqualityOperator
                             ? paramName.substring(0, paramName.length() - operator.length()).strip() // ?score>=10 -> key: score>, value: 10
                             : paramName.substring(0, paramName.length() - operator.length() - value.length()).strip(); // ?score>10 -> key: score>10, value: ""
+                    value = value.strip();
                     if (shouldContainEqualityOperator) {
                         operator += "=";
                     }

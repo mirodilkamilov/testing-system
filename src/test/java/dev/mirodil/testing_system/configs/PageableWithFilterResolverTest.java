@@ -122,13 +122,17 @@ class PageableWithFilterResolverTest {
 
     @Test
     void testExtractFilterParameters_spaces() {
-        when(webRequest.getParameterNames()).thenReturn(List.of("title").iterator());
+        when(webRequest.getParameterNames()).thenReturn(List.of("title", "isPassed> true ", " whatever <").iterator());
         when(webRequest.getParameterValues("title")).thenReturn(new String[]{" New test "});
+        when(webRequest.getParameterValues("isPassed> true ")).thenReturn(new String[]{""});
+        when(webRequest.getParameterValues(" whatever <")).thenReturn(new String[]{" 50 "});
 
         Map<String, Map<String, String>> result = resolver.extractFilterParameters(webRequest);
 
-        assertEquals(1, result.size());
+        assertEquals(3, result.size());
         assertEquals(Map.of("=", "New test"), result.get("title"));
+        assertEquals(Map.of(">", "true"), result.get("isPassed"));
+        assertEquals(Map.of("<=", "50"), result.get("whatever"));
     }
 
     @Test
@@ -143,17 +147,21 @@ class PageableWithFilterResolverTest {
 
     @Test
     void testExtractFilterParameters_malformedOperators() {
-        when(webRequest.getParameterNames()).thenReturn(List.of("score>>50", "isPassed", "scorePercentage>").iterator());
+        when(webRequest.getParameterNames()).thenReturn(List.of("score>>50", "isPassed", "scorePercentage>", "whatever>", "whatever!").iterator());
         when(webRequest.getParameterValues("score>>50")).thenReturn(new String[]{""});
         when(webRequest.getParameterValues("isPassed")).thenReturn(new String[]{">true"});
         when(webRequest.getParameterValues("scorePercentage>")).thenReturn(new String[]{"70,90"});
+        when(webRequest.getParameterValues("whatever>")).thenReturn(new String[]{">50"});
+        when(webRequest.getParameterValues("whatever!")).thenReturn(new String[]{"50"});
 
         Map<String, Map<String, String>> result = resolver.extractFilterParameters(webRequest);
 
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
         assertEquals(Map.of(">", ">50"), result.get("score")); // ?score>>50
         assertEquals(Map.of("=", ">true"), result.get("isPassed")); // ?isPassed=>true
         assertEquals(Map.of(">=", "70,90"), result.get("scorePercentage")); // ?scorePercentage>=70,90
+        assertEquals(Map.of(">=", ">50"), result.get("whatever")); // ?whatever>=>50
+        assertEquals(Map.of("=", "50"), result.get("whatever!")); // ?whatever!=50
     }
 }
 
