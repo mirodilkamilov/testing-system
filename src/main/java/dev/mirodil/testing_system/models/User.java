@@ -21,16 +21,16 @@ import java.util.Set;
 @Table("users")
 public class User implements UserDetails {
     private static final Set<String> ALLOWED_SORT_ATTRIBUTES = Set.of(
-            "userId", "email", "userRole", "fname", "lname", "status", "createdAt"
+            "userId", "email", "roleId", "fname", "lname", "status", "createdAt"
     );
     private static final Map<String, Class<?>> ALLOWED_FILTER_ATTRIBUTES = Map.of(
             "userId", String.class,
             "email", String.class,
-            "userRole", String.class,
+            "roleId", Integer.class,
             "fname", String.class,
             "lname", String.class,
             "status", String.class,
-            "createdAt", String.class
+            "createdAt", Instant.class
     );
 
     @Id
