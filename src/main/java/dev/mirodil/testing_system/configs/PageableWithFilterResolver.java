@@ -68,21 +68,19 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
         Map<String, Map<String, String>> rawFilters = extractFilterParameters(webRequest);
 
         // Determine allowed filters and sorts based on entity annotation
-        Map<String, Class<?>> allowedFilters = getEntityAllowedFilters(parameter);
         Set<String> allowedSorts = getEntityAllowedSorts(parameter);
+        ValidationUtil.forceValidPageable(pageable, allowedSorts);
+        Map<String, Class<?>> allowedFilters = getEntityAllowedFilters(parameter);
+        ValidationUtil.forceValidRawFilters(rawFilters, allowedFilters);
 
         List<FilterCriteria<?>> filters = convertFiltersToTypedList(rawFilters, allowedFilters);
 
-        // Construct PageWithFilterRequest and validate allowed parameters
-        PageWithFilterRequest pageRequest = new PageWithFilterRequest(
+        return new PageWithFilterRequest(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 pageable.getSort(),
                 filters
         );
-        ValidationUtil.forceValidPageable(pageRequest, allowedSorts, allowedFilters);
-
-        return pageRequest;
     }
 
     Map<String, Map<String, String>> extractFilterParameters(NativeWebRequest webRequest) {
@@ -144,13 +142,12 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
 
     /**
      * Converts raw filter parameters into a list of structured filter criteria.
+     * Raw filter should be validated before passed for conversion.
      *
      * @param rawFilters     The raw filter parameters from the request
      * @param allowedFilters The allowed filters with their expected data types
      * @return A list of {@link FilterCriteria} objects representing structured filters
-     * @throws GenericValidationError   If an invalid filter attribute is provided
-     * @throws IllegalArgumentException If malformed filter value is passed
-     * @throws RuntimeException         If filter type is not defined in an entity level
+     * @throws RuntimeException If filter type is not defined in an entity level
      */
     private List<FilterCriteria<?>> convertFiltersToTypedList(Map<String, Map<String, String>> rawFilters, Map<String, Class<?>> allowedFilters) {
         if (rawFilters.isEmpty()) {
@@ -158,14 +155,8 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
         }
 
         List<FilterCriteria<?>> filterCriteriaList = new ArrayList<>();
-        final Pattern supportedOperatorsPattern = Pattern.compile(">=|<=|=|>|<");
-
         for (Map.Entry<String, Map<String, String>> entry : rawFilters.entrySet()) {
             String key = entry.getKey();
-
-            if (!allowedFilters.containsKey(key)) {
-                throw new GenericValidationError("Invalid filter attribute: " + key);
-            }
 
             Class<?> type = allowedFilters.get(key);
             if (type == null) {
@@ -178,15 +169,6 @@ public class PageableWithFilterResolver implements HandlerMethodArgumentResolver
             for (Map.Entry<String, String> operatorValue : entry.getValue().entrySet()) {
                 String operator = operatorValue.getKey();
                 String value = operatorValue.getValue();
-                Matcher matcher = supportedOperatorsPattern.matcher(operator);
-
-                if (!matcher.matches()) {
-                    throw new GenericValidationError("Filter operator " + operator + " for '" + key + "' is not supported. Supported operators: " + supportedOperatorsPattern.pattern().replace("|", ", "));
-                }
-
-                if (value.contains(",") && !operator.equals("=")) {
-                    throw new GenericValidationError("Multivalued filter with the same key is only supported with equality operator (=). You should declare " + key + " separately (e.g. scorePercentage>=70&scorePercentage<90).");
-                }
 
                 // Support multi-value filters (e.g., ?status=active,inactive)
                 if (value.contains(",") && operator.equals("=")) {

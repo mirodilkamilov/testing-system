@@ -5,30 +5,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class ValidationUtil {
     public static final int MAX_PAGE_SIZE = 100;
-
-    /**
-     * Validates the sorting and filter parameters of a {@link PageWithFilterRequest} object to ensure that only allowed attributes
-     * and valid sort directions (ascending or descending) are used. This method helps prevent SQL injection
-     * attacks by restricting sorting and filter attributes to a predefined set of allowed values.
-     * <p>
-     * Malicious input example:
-     * {@code ?size=7&sort=id,desc&sort=fname;DROP TABLE users; --}
-     *
-     * @param pageable                the {@link PageWithFilterRequest} object to validate.
-     * @param allowedSortAttributes   a {@link Set} of attribute names that are permitted for sorting.
-     * @param allowedFilterAttributes a {@link Map} of permitted attributes and their value types for filtering. {@code Map.of("isPassed", Boolean.class)}.
-     * @throws GenericValidationError if an invalid sort or filter attribute or sort direction is detected.
-     */
-    public static void forceValidPageable(PageWithFilterRequest pageable, Set<String> allowedSortAttributes, Map<String, Class<?>> allowedFilterAttributes) throws GenericValidationError {
-        forceValidPageable(pageable, allowedSortAttributes);
-        forceValidFilter(pageable.getFilters(), allowedFilterAttributes);
-    }
 
     /**
      * Validates the sorting parameters of a {@link Pageable} object to ensure that only allowed attributes
@@ -64,7 +45,7 @@ public class ValidationUtil {
 
         for (Sort.Order order : sort.stream().toList()) {
             if (!allowedSortAttributes.contains(order.getProperty())) {
-                throw new GenericValidationError("Invalid sort attribute: " + order.getProperty());
+                throw new GenericValidationError("Not allowed sort attribute: " + order.getProperty() + "'. Allowed attributes: " + allowedSortAttributes);
             }
 
             if (!order.isAscending() && !order.isDescending()) {
@@ -73,26 +54,43 @@ public class ValidationUtil {
         }
     }
 
-    public static void forceValidFilter(List<FilterCriteria<?>> filters, Map<String, Class<?>> allowedFilterAttributes) {
-        if (filters.isEmpty()) {
+    /**
+     * Validates raw filter parameters with {@code Map<attribute, Map<operator, value>>} representation to ensure
+     * that only allowed filter attributes are used.
+     *
+     * @param rawFilters              the {@code Map<attribute, Map<operator, value>>} object to validate. Example object:<p>
+     *                                {@code Map.of("score", Map.of(">=", "70")) // ?score>=70}
+     * @param allowedFilterAttributes a {@link Map} of permitted attributes and their value types for filtering. {@code Map.of("isPassed", Boolean.class)}.
+     * @throws GenericValidationError if an invalid filter attribute, operator, or value is detected.
+     */
+    public static void forceValidRawFilters(Map<String, Map<String, String>> rawFilters, Map<String, Class<?>> allowedFilterAttributes) {
+        if (rawFilters.isEmpty()) {
             return;
         }
 
-        for (FilterCriteria<?> filter : filters) {
-            String attribute = filter.attribute();
-            List<String> operators = filter.operators();
+        for (Map.Entry<String, Map<String, String>> filter : rawFilters.entrySet()) {
+            String attribute = filter.getKey();
+            Map.Entry<String, String> operatorValueEntry = filter.getValue().entrySet().iterator().next();
+            String operator = operatorValueEntry.getKey();
+            String value = operatorValueEntry.getValue();
 
             if (!allowedFilterAttributes.containsKey(attribute)) {
-                throw new GenericValidationError("Invalid filter attribute: '" + attribute + "'. Allowed attributes: " + allowedFilterAttributes.keySet());
+                throw new GenericValidationError("Not allowed filter attribute: '" + attribute + "'. Allowed attributes: " + allowedFilterAttributes.keySet());
             }
 
             Class<?> type = allowedFilterAttributes.get(attribute);
             Set<String> validOperators = getAllowedOperatorsForType(type);
-            for (String operator : operators) {
-                if (!validOperators.contains(operator)) {
-                    throw new GenericValidationError("Invalid operator '" + operator + "' for filter '" + attribute + "'. " +
-                            "Allowed operators: " + validOperators);
-                }
+            if (!validOperators.contains(operator)) {
+                throw new GenericValidationError("Invalid operator '" + operator + "' for filter '" + attribute + "'. " +
+                        "Allowed operators: " + validOperators);
+            }
+
+            if (value.isBlank()) {
+                throw new GenericValidationError("Value for '" + attribute + "' cannot be empty.");
+            }
+
+            if (value.contains(",") && !operator.equals("=")) {
+                throw new GenericValidationError("Multivalued filter with the same attribute is only supported with equality operator (=). You should declare " + attribute + " separately (e.g. scorePercentage>=70&scorePercentage<90).");
             }
         }
     }
