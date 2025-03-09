@@ -39,7 +39,7 @@ The following ER diagram shows the core database structure of the Testing System
 
 ### API Examples
 
--- TODO: add image
+![Example responses](example_responses.png)
 
 For exploring and testing complete API endpoints, visit
 the [Swagger UI](https://testing.mirodil.dev/api/swagger-ui.html)

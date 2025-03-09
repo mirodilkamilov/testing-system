@@ -45,7 +45,7 @@ public class ValidationUtil {
 
         for (Sort.Order order : sort.stream().toList()) {
             if (!allowedSortAttributes.contains(order.getProperty())) {
-                throw new GenericValidationError("Not allowed sort attribute: " + order.getProperty() + "'. Allowed attributes: " + allowedSortAttributes);
+                throw new GenericValidationError("Not allowed sort attribute: '" + order.getProperty() + "'. Allowed attributes: " + allowedSortAttributes);
             }
 
             if (!order.isAscending() && !order.isDescending()) {
