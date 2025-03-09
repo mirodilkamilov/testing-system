@@ -30,7 +30,6 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
             errorAttributes.put("path", fullUrl);
         }
 
-
         return errorAttributes;
     }
 }
