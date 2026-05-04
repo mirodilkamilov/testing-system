@@ -16,6 +16,7 @@ allowed-tools: Bash(git status:*), Bash(git diff --staged), Bash(git commit:*), 
 # Git Commit with Conventional Message
 
 Follow these steps in order. Each step is a gate — do not skip ahead.
+Do not output anything other than what is explicitly asked here.
 
 ## Step 1: Check for staged changes
 
@@ -128,12 +129,13 @@ Ask: "Does this look right, or would you like to adjust it?"
 ## Step 5: Commit
 
 Use the following format for making the commit message:
-```
-<type>(<scope>): <short description>
+
+```bash
+git commit -m "<type>(<scope>): <short description>
 
 [body — explain the WHY, not the what; omit if obvious]
 
-[footer — e.g. Closes #42, BREAKING CHANGE: ... <if applies>]
+[footer — e.g. Closes #42, BREAKING CHANGE: ... <if applies>]"
 ```
 
 After a successful commit, show the one-line summary:
