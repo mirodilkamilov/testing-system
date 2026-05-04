@@ -5,6 +5,7 @@ description: >
   Use whenever the user asks to commit, "git commit", "make a commit",
   "commit my changes", or "commit staged files". Runs safety checks for
   empty staging area and sensitive data before committing.
+allowed-tools: Bash(git status:*), Bash(git diff --staged), Bash(git commit:*), Bash(git log --oneline -1)
 ---
 
 ## Context
@@ -126,15 +127,13 @@ Ask: "Does this look right, or would you like to adjust it?"
 
 ## Step 5: Commit
 
-Use a heredoc to preserve multi-line formatting exactly:
+Use the following format for making the commit message:
+```
+<type>(<scope>): <short description>
 
-```bash
-git commit -m "$(cat <<'EOF'
-<subject line>
+[body — explain the WHY, not the what; omit if obvious]
 
-<body if any>
-EOF
-)"
+[footer — e.g. Closes #42, BREAKING CHANGE: ... <if applies>]
 ```
 
 After a successful commit, show the one-line summary:
